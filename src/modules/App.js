@@ -1,16 +1,23 @@
-import React from 'react'
-import { Link } from 'react-router'
+import React from 'react';
 
-export default React.createClass({
-  render() {
-    return (
-      <div>
-        <h1>React Router Tutorial</h1>
-        <ul role="nav">
-          <li><Link to="/about">About</Link></li>
-          <li><Link to="/repos">Repos</Link></li>
-        </ul>
-      </div>
-    )
+export default class Authentication extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
   }
-})
+
+  handleClick(e) {
+    e.preventDefault();
+    console.log(this,112);
+    this.context.router.push('/about');
+    //this.context.router.transitionTo('/');
+  }
+
+  render(){
+    return (<div onClick={this.handleClick}>Click me!</div>);
+  }
+}
+
+Authentication.contextTypes = {
+  router: React.PropTypes.object
+};
