@@ -8,9 +8,9 @@ const options = {
 	key: fs.readFileSync(__dirname + '/remoteavatar-key.pem'),
 	cert: fs.readFileSync(__dirname + '/remoteavatar-cert.pem')
 };
-https.createServer(http, app).listen(process.env.PORT || 3000);
-//const io = sio(server);
-console.log(112, https)
+const server = https.createServer(options, app).listen(process.env.PORT || 3000);
+const io = sio(server);
+
 
 app.use(express.static('public'));
 app.get('/aaa', function(req, res){
@@ -27,7 +27,7 @@ app.get('*', function(req, res){
     res.sendFile(__dirname + '/public/index.html');
 });
 
-/*
+
 
 
 
@@ -84,4 +84,3 @@ io.sockets.on('connection', function(socket) {
   });
 
 });
-*/

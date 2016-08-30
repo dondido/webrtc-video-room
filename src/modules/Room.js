@@ -30,36 +30,7 @@ var room = 'foo';
 // Could prompt for room name:
 // room = prompt('Enter room name:');
 
-var socket = io.connect();
-
-if (room !== '') {
-  socket.emit('create or join', room);
-  console.log('Attempted to create or  join room', room);
-}
-
-socket.on('created', function(room) {
-  console.log('Created room ' + room);
-  isInitiator = true;
-});
-
-socket.on('full', function(room) {
-  console.log('Room ' + room + ' is full');
-});
-
-socket.on('join', function (room){
-  console.log('Another peer made a request to join room ' + room);
-  console.log('This peer is the initiator of room ' + room + '!');
-  isChannelReady = true;
-});
-
-socket.on('joined', function(room) {
-  console.log('joined: ' + room);
-  isChannelReady = true;
-});
-
-socket.on('log', function(array) {
-  console.log.apply(console, array);
-});
+var socket;
 
 ////////////////////////////////////////////////
 
@@ -67,30 +38,6 @@ function sendMessage(message) {
   console.log('Client sending message: ', message);
   socket.emit('message', message);
 }
-
-// This client receives a message
-socket.on('message', function(message) {
-  console.log('Client received message:', message);
-  if (message === 'got user media') {
-    maybeStart();
-  } else if (message.type === 'offer') {
-    if (!isInitiator && !isStarted) {
-      maybeStart();
-    }
-    pc.setRemoteDescription(new RTCSessionDescription(message));
-    doAnswer();
-  } else if (message.type === 'answer' && isStarted) {
-    pc.setRemoteDescription(new RTCSessionDescription(message));
-  } else if (message.type === 'candidate' && isStarted) {
-    var candidate = new RTCIceCandidate({
-      sdpMLineIndex: message.label,
-      candidate: message.candidate
-    });
-    pc.addIceCandidate(candidate);
-  } else if (message === 'bye' && isStarted) {
-    handleRemoteHangup();
-  }
-});
 
 ////////////////////////////////////////////////////
 
@@ -365,14 +312,69 @@ export default class Room extends React.Component {
     };
   }
   componentDidMount() {
-    this.serverRequest = window.fetch('/aaa').then(res => res.json()).then(result => {
+
+
+  	socket = io.connect();
+
+socket.on('created', function(room) {
+  console.log('Created room ' + room);
+  isInitiator = true;
+});
+
+socket.on('full', function(room) {
+  console.log('Room ' + room + ' is full');
+});
+
+socket.on('join', function (room){
+  console.log('Another peer made a request to join room ' + room);
+  console.log('This peer is the initiator of room ' + room + '!');
+  isChannelReady = true;
+});
+
+socket.on('joined', function(room) {
+  console.log('joined: ' + room);
+  isChannelReady = true;
+});
+
+socket.on('log', function(array) {
+  console.log.apply(console, array);
+});
+
+// This client receives a message
+socket.on('message', function(message) {
+  console.log('Client received message:', message);
+  if (message === 'got user media') {
+    maybeStart();
+  } else if (message.type === 'offer') {
+    if (!isInitiator && !isStarted) {
+      maybeStart();
+    }
+    pc.setRemoteDescription(new RTCSessionDescription(message));
+    doAnswer();
+  } else if (message.type === 'answer' && isStarted) {
+    pc.setRemoteDescription(new RTCSessionDescription(message));
+  } else if (message.type === 'candidate' && isStarted) {
+    var candidate = new RTCIceCandidate({
+      sdpMLineIndex: message.label,
+      candidate: message.candidate
+    });
+    pc.addIceCandidate(candidate);
+  } else if (message === 'bye' && isStarted) {
+    handleRemoteHangup();
+  }
+});
+
+room = this.props.params.room;
+  socket.emit('create or join', room);
+  console.log('Attempted to create or  join room', room);
+    /*this.serverRequest = window.fetch('/aaa').then(res => res.json()).then(result => {
       console.log(112, result)
       var lastGist = result[0];
       this.setState({
         username: lastGist.owner.login,
         lastGistUrl: lastGist.html_url
       });
-    })
+    })*/
   }
   componentWillUnmount() {
     this.serverRequest.abort();
