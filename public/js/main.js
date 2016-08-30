@@ -1,5 +1,3 @@
-import React from 'react';
-
 'use strict';
 
 var isChannelReady = false;
@@ -346,49 +344,4 @@ function removeCN(sdpLines, mLineIndex) {
 
   sdpLines[mLineIndex] = mLineElements.join(' ');
   return sdpLines;
-}
-
-
-
-
-
-
-
-
-
-export default class Room extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      username: '',
-      lastGistUrl: ''
-    };
-  }
-  componentDidMount() {
-    this.serverRequest = window.fetch('/aaa').then(res => res.json()).then(result => {
-      console.log(112, result)
-      var lastGist = result[0];
-      this.setState({
-        username: lastGist.owner.login,
-        lastGistUrl: lastGist.html_url
-      });
-    })
-  }
-  componentWillUnmount() {
-    this.serverRequest.abort();
-  }
-  render(){
-  	const href = window.location.href;
-    return (
-      <div>
-        <div id="videos">
-          <video id="localVideo" autoplay muted></video>
-          <video id="remoteVideo" autoplay></video>
-        </div>
-        <div>Waiting for someone to join this room:
-        	<a href={href}>{href}</a>
-        </div>
-      </div>
-    );
-  }
 }
