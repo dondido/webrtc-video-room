@@ -13,11 +13,7 @@ const io = sio(server);
 
 
 app.use(express.static('public'));
-app.get('/aaa', function(req, res){
-	console.log(113)
-    res.json({req: 1});
-    //res.sendFile(__dirname + '/public/index.html');
-});
+
 app.get('/r/:room', function(req, res){
 	console.log(111, req.params.room)
     res.sendFile(__dirname + '/public/index.html');
@@ -26,8 +22,6 @@ app.get('*', function(req, res){
 	console.log(110)
     res.sendFile(__dirname + '/public/index.html');
 });
-
-
 
 
 
@@ -48,16 +42,14 @@ io.sockets.on('connection', function(socket) {
 
   socket.on('create or join', function(room) {
     log('Received request to create or join room ' + room);
+    let sr = io.sockets.adapter.rooms[room];
 
-    var numClients = io.sockets.sockets.length;
-    log('Room ' + room + ' now has ' + numClients + ' client(s)');
-
-    if (numClients === 1) {
+    if (sr === undefined) {
       socket.join(room);
       log('Client ID ' + socket.id + ' created room ' + room);
       socket.emit('created', room, socket.id);
 
-    } else if (numClients === 2) {
+    } else if (sr.length === 1) {
       log('Client ID ' + socket.id + ' joined room ' + room);
       io.sockets.in(room).emit('join', room);
       socket.join(room);
