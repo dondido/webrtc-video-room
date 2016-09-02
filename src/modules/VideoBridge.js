@@ -144,10 +144,7 @@ export default class VideoBridge extends React.Component {
   }
   render(){
     return (
-        <div id="videos">
-          <video id="localVideo" autoPlay muted></video>
           <video id="remoteVideo" autoPlay></video>
-        </div>
     );
   }
 }
