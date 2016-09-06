@@ -35,39 +35,40 @@ io.sockets.on('connection', socket => {
       socket.join(room);
       socket.emit('create');
     };
+  console.log(111, io.sockets.connected[socket.id].request.session.save)
   // sending to all clients in the room (channel) except sender
   socket.on('message', message => socket.broadcast.to(room).emit('message', message));
   socket.on('find', () => {
-    const url = socket.request.headers.referer.split('/');
-    room = url[url.length - 1];
-    client.lrange(room, 0, -1, (err, reply) => {
-      if (err) {
-        return console.log(err);
+    const url = socket.request.headers.referer.split('/'),
+      room = url[url.length - 1],
+      chatRoom = io.sockets.adapter.rooms[room];
+    if (chatRoom === undefined) {
+      // no room with such name is found so create it
+      socket.join(room);
+      socket.emit('create');
+      console.log(111, room, socket.request.session.save)
+    } else if (chatRoom.length === 1) {
+      // a room with a host is found
+      let sessionRoom = socket.request.session[room];
+      if (Array.isArray(sessionRoom) === true) {
+        if (sessionRoom.includes(socket.request.sessionID) === true) {
+          // host of the room is welcome to take her place
+          socket.join(room);
+          socket.emit('create');
+        } else if (sessionRoom.includes(io.sockets.connected[Object.keys(chatRoom)[0]].request.sessionID) === true) {
+          socket.join(room);
+          // sending to all clients in 'game' room(channel), include sender
+          io.in(room).emit('bridge');
+        } else {
+          socket.emit('join');
+        }
+      } else {
+        socket.emit('join');
       }
-      const host = 'sess:' + reply[0];
-      if (reply.length === 0) {
-        client.rpush([room, sessionID], create);
-      }
-      else if (reply.length === 1) {
-        client.exists(host, (err, reply) => {
-          if (err) {
-            return console.log(err);
-          }
-          // a room with a host is found
-          reply === 1 ? socket.emit('join') : client.lset([room, 0, sessionID], create);
-        });
-      }
-      else if (reply.length === 2) {
-        client.exists(host, (err, reply) => {
-          if (err) {
-            return console.log(err);
-          }
-          // max two clients
-          reply === 1 ? socket.emit('full') :
-            client.multi().del(room).rpush([room, sessionID]).exec(create);
-        });
-      }
-    });
+    } else {
+      // max two clients
+      socket.emit('full');
+    }
   });
   socket.on('auth', data => {
     data.sid = socket.id;
@@ -75,15 +76,17 @@ io.sockets.on('connection', socket => {
     socket.broadcast.to(room).emit('approve', data);
   });
   socket.on('accept', id => {
-    const so = io.sockets.connected[id];
-    client.rpush([room, so.request.sessionID], (err, reply) => {
-      if (err) {
-        return console.log(err);
-      }
-      so.join(room);
+    const peerSocket = io.sockets.connected[id],
+      upsert = (sess, id) => {
+        sess[room] = sess[room] || [];
+        sess[room].push(id);
+        sess.save();
+      };
+      upsert(peerSocket.request.session, socket.request.sessionID);
+      upsert(socket.request.session, id);
+      peerSocket.join(room);
       // sending to all clients in 'game' room(channel), include sender
       io.in(room).emit('bridge');
-    });
   });
   socket.on('reject', () =>socket.emit('full'));
   socket.on('bye', () => {
