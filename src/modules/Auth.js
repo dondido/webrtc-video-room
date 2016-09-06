@@ -1,62 +1,70 @@
 import React from 'react'
-
-var mediaSource = new MediaSource();
-mediaSource.addEventListener('sourceopen', handleSourceOpen, false);
-var mediaRecorder;
-var recordedBlobs;
-var sourceBuffer;
-
-function handleSourceOpen(event) {
-  console.log('MediaSource opened');
-  sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8"');
-  console.log('Source buffer: ', sourceBuffer);
-}
+import Remarkable from 'remarkable'
 
 export default class Auth extends React.Component {
   constructor(props) {
     super(props);
-    this.snapAndSend = this.snapAndSend.bind(this);
   }
-  init() {
-    var photo = document.getElementById('photo');
-    var photoContext = photo.getContext('2d');
-    console.log(111, photo);
+  state = {
+    room: '',
+    sid: '',
+    userName: '',
+    message: ''
   }
-  handleDataAvailable(event) {
-    if (event.data && event.data.size > 0) {
-      recordedBlobs.push(event.data);
-    }
+  hideAuth() {
+    this.setState({room: ''});
+  } 
+  full = () => this.setState({room: 'full'})
+  componentDidMount() {
+    const socket = this.props.socket;
+    let user;
+    socket.on('create', () => user = 'host');
+    socket.on('full', this.full);
+    socket.on('bridge', () => this.props.setUser(user));
+    socket.on('join', () => {
+      this.setState({room: 'join'});
+      user = 'guest';
+    });
+    socket.on('approve', data => {
+      this.setState({room: 'approve'});
+      this.setState({userName: data.userName});
+      this.setState({message: data.message});
+      this.setState({sid: data.sid});
+    });
+    socket.on('log', function(array) {
+      console.log.apply(console, array);
+    });
+    socket.emit('find');
   }
-  handleStop(event) {
-    console.log('Recorder stopped: ', event);
+  handleInput = e => this.setState({[e.target.dataset.ref]: e.target.value})
+  send = e => {
+    e.preventDefault();
+    this.props.socket.emit('auth', this.state);
+    this.hideAuth();
   }
-  stopRecording() {
-    mediaRecorder.stop();
-    console.log('Recorded Blobs: ', recordedBlobs);
-    recordedVideo.controls = true;
+  handleInvitation = e => {
+    e.preventDefault();
+    this.props.socket.emit([e.target.dataset.ref], this.state.sid);
+    this.hideAuth();
   }
-  play() {
-    var superBuffer = new Blob(recordedBlobs, {type: 'video/webm'});
-    recordedVideo.src = window.URL.createObjectURL(superBuffer);
-  }
-  startRecording() {
-    recordedBlobs = [];
-    mediaRecorder = new MediaRecorder(window.stream, {mimeType: 'video/webm;codecs=vp9'});
-    
-    console.log('Created MediaRecorder', mediaRecorder, 'with options', options);
-    //recordButton.textContent = 'Stop Recording';
-    //playButton.disabled = true;
-    //downloadButton.disabled = true;
-    mediaRecorder.onstop = this.handleStop;
-    mediaRecorder.ondataavailable = this.handleDataAvailable;
-    mediaRecorder.start(10); // collect 10ms of data
-    console.log('MediaRecorder started', mediaRecorder);
+  getContent(content) {
+    return {__html: (new Remarkable()).render(content)};
   }
   render(){
     return (
-      <div>
-      	<canvas id="photo"></canvas>
-        <button onClick={this.record}>Start recording</button>
+      <div className={this.state.room}>
+        <form className="request-access">
+          <input type="text" onChange={this.handleInput} data-ref="userName" />
+        	<input type="text" onChange={this.handleInput} data-ref="message" />
+          <button onClick={this.send}>Send</button>
+        </form>
+        <div className="grant-access">
+          <div dangerouslySetInnerHTML={this.getContent(this.state.userName)}></div>
+          <div dangerouslySetInnerHTML={this.getContent(this.state.message)}></div>
+          <button onClick={this.handleInvitation} data-ref="reject">Reject</button>
+          <button onClick={this.handleInvitation} data-ref="accept">Accept</button>
+        </div>
+        <div className="room-occupied">Please, try another room!</div>
       </div>
     );
   }

@@ -1,61 +1,48 @@
 import React from 'react'
+import { withRouter } from 'react-router'
 import VideoBridge from './VideoBridge'
 import Auth from './Auth'
-
-var socket;
-
-
-export default class Room extends React.Component {
+class Room extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      username: '',
-      lastGistUrl: ''
-    };
-    this.getUserMedia = navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: true
-    })
   }
+  state = {
+      user: '',
+      audio: false,
+      video: true,
+      full: false
+  }
+  haveMedia = false;
+  getUserMedia = navigator.mediaDevices.getUserMedia({
+    audio: false,
+    video: true
+  }).catch(e => alert('getUserMedia() error: ' + e.name))
+  socket = io.connect()
+  setUser = user => this.setState({user: user})
   componentDidMount() {
-
-
-  	socket = io.connect();
-
-    this.getUserMedia.then(stream => 
-      this.refs.lv.src = window.URL ? window.URL.createObjectURL(stream) : stream);
-
-    socket.on('created', room => {
-      console.log('Created room ' + room);
-      //this.refs.vb.init();
-      this.getUserMedia.then(this.refs.au.init);
+    this.getUserMedia
+      .then(stream => {
+        this.localStream = stream;
+        this.haveMedia = true;
+        this.refs.localVideo.src = window.URL.createObjectURL(stream);
+      });
+    this.props.router.setRouteLeaveHook(this.props.route, () => {
+      this.localStream.getVideoTracks()[0].stop();
+      this.haveMedia = false;
     });
-
-    socket.on('full', function(room) {
-      console.log('Room ' + room + ' is full');
-    });
-
-    socket.on('join', function (room){
-      console.log('Another peer made a request to join room ' + room);
-      console.log('This peer is the initiator of room ' + room + '!');
-    });
-
-    socket.on('joined', function(room) {
-      console.log('joined: ' + room);
-    });
-
-    socket.on('log', function(array) {
-      console.log.apply(console, array);
-    });
-    socket.emit('create or join', this.props.params.room);
   }
   render(){
   	const href = window.location.href;
     return (
       <div>
-        <video ref="lv" autoPlay muted></video>
-        <VideoBridge socket={socket} au={this.refs.au} ref="vb" />
-        <Auth socket={socket} ref="au" />
+        <Auth socket={this.socket} setUser={this.setUser} />
+        <div className="media-port">
+          <video ref="localVideo" autoPlay muted></video>
+          <button onClick={this.handleAudio} data-ref="audio">Audio</button>
+          <button onClick={this.handleVideo} data-ref="video">Video</button>
+          <button onClick={this.handleFullScreen} data-ref="full">Full</button>
+          {this.state.user !== '' && <VideoBridge user={this.state.user} localStream={this.localStream} haveMedia={this.haveMedia} getUserMedia={this.getUserMedia} socket={this.socket} />}
+        </div>
         <div>Waiting for someone to join this room:
         	<a href={href}>{href}</a>
         </div>
@@ -63,3 +50,4 @@ export default class Room extends React.Component {
     );
   }
 }
+export default withRouter(Room)

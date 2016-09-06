@@ -1,22 +1,14 @@
 import React from 'react'
 
-var dc,
-    pc,
-    socket,
-    localVideoStream;
-
 export default class VideoBridge extends React.Component {
   constructor(props) {
     super(props);
   }
   componentDidMount() {
-  	socket = this.props.socket;
-  }
-  init() {
-    var remoteVideoStream,
-      localVideo = document.getElementById('localVideo'),
-      remoteVideo = document.getElementById('remoteVideo'),
-      haveLocalMedia = false,
+    let dc,
+      pc,
+      remoteStream,
+      haveMedia = false,
       onMessage = message => {
           console.log('message from peer:', message);
           if (message.type === 'offer') {
@@ -36,16 +28,12 @@ export default class VideoBridge extends React.Component {
               );
           }
       },
-      sendData = msg => {
-          msg = JSON.stringify(msg);
-          console.log('sending ' + msg + ' over data channel');
-          dc.send(msg);
-      },
+      sendData = msg => dc.send(JSON.stringify(msg)),
       // send the offer to a server to be forwarded to the other peer
       gotDescription = localDesc => {
           pc.setLocalDescription(localDesc);
           console.log('localDesc', localDesc)
-          socket.emit('message', localDesc);
+          this.props.socket.send(localDesc);
       },
       // Set up the data channel message handler
       setupDataHandlers = () => {
@@ -54,62 +42,39 @@ export default class VideoBridge extends React.Component {
               console.log('received message over data channel:');
               console.log(msg);
           };
-          dc.onclose = function() {
-              localVideoStream.getVideoTracks()[0].stop();
-              remoteVideoStream.getVideoTracks()[0].stop();
-              $broadcast.classList.remove('show', 'modal-callee', 'modal-caller');
-              //$broadcastX.removeEventListener('click', close);
-              haveLocalMedia = false;
+          dc.onclose = () => {
+              this.props.localStream.getVideoTracks()[0].stop();
+              remoteStream.getVideoTracks()[0].stop();
+              haveMedia = false;
               console.log('The Data Channel is Closed');
           };
       },
       // If RTCPeerConnection is ready and we have local media,
       // attach media to pc
-      attachMediaIfReady = () => {
-          console.log('attachMediaIfReady', pc, haveLocalMedia);
-          if (pc && haveLocalMedia) {
-              pc.addStream(localVideoStream);
-              console.log('attached', callee);
+      attachMediaIfReady = () => { 
+          console.log('attachMediaIfReady', pc, haveMedia, this.props.user);
+          if (pc && haveMedia) {
+              pc.addStream(this.props.localStream);
               // call if we were the last to connect (to increase
               // chances that everything is set up properly at both ends)
-              if (callee) {
+              if (this.props.user === 'host') {
                   dc = pc.createDataChannel('chat');
                   setupDataHandlers();
                   pc.createOffer(gotDescription, handleError);
               }
           }
       },
-      handleError = e => console.log(e),
-      //close = () => pc.close(),
-      attachMyStream = stream => {
-          console.log('getUserMedia success');
-          localVideoStream = stream;
-          haveLocalMedia = true;
-          window.adapter.browserShim.attachMediaStream(localVideo, localVideoStream);
-          // wait for RTCPeerConnection to be created
-          attachMediaIfReady();
-      },
-      success = function(stream) {
-          console.log('getUserMedia success');
-          localVideoStream = stream;
-          haveLocalMedia = true;
-          window.adapter.browserShim.attachMediaStream(localVideo, localVideoStream);
-          // wait for RTCPeerConnection to be created
-          attachMediaIfReady();
-      };
+      handleError = e => console.log(e);
+    // chrome polyfill for connection between the local device and a remote peer
+    window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
     // set up the peer connection
-    pc = new RTCPeerConnection(
-        // this is one of Google's public STUN servers
-        {
-            iceServers: [{
-                url: 'stun:stun.l.google.com:19302'
-            }]
-        });
+    // this is one of Google's public STUN servers
+    pc = new RTCPeerConnection({iceServers: [{url: 'stun:stun.l.google.com:19302'}]});
     // when our browser gets a candidate, send it to the peer
     pc.onicecandidate = e => {
-        console.log(e);
+        console.log(e, 'onicecandidate');
         if (e.candidate) {
-            socket.emit('message', {
+            this.props.socket.send({
                 type: 'candidate',
                 mlineindex: e.candidate.sdpMLineIndex,
                 candidate: e.candidate.candidate
@@ -119,32 +84,27 @@ export default class VideoBridge extends React.Component {
     // when the other side added a media stream, show it on screen
     pc.onaddstream = e => {
         console.log('onaddstream', e) 
-        remoteVideoStream = e.stream;
-        window.adapter.browserShim.attachMediaStream(remoteVideo, remoteVideoStream);
-        
+        remoteStream = e.stream;
+        this.refs.remoteVideo.src = window.URL.createObjectURL(remoteStream);
     };
     pc.ondatachannel = e => {
         // data channel
         dc = e.channel;
         setupDataHandlers();
         sendData('hello');
-    }
-    // User selects another user to start a peer connection with
-
-    navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: true
-    })
-    .then(attachMyStream)
-    .catch(function(e) {
-      alert('getUserMedia() error: ' + e.name);
-    });
+    };
     // wait for local media to be ready
-    attachMediaIfReady();
+    this.props.getUserMedia.then(() => {
+      haveMedia = this.props.haveMedia;
+      attachMediaIfReady();
+    });
+    this.props.socket.on('message', onMessage);
   }
   render(){
     return (
-          <video id="remoteVideo" autoPlay></video>
+      <div>
+        <video ref="remoteVideo" autoPlay></video>
+      </div>
     );
   }
 }

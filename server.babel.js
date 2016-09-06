@@ -2,77 +2,119 @@ import express from 'express';
 import fs from 'fs';
 import https from 'https';
 import sio from 'socket.io';
-
-const app = express();
-const options = { 
-	key: fs.readFileSync(__dirname + '/remoteavatar-key.pem'),
-	cert: fs.readFileSync(__dirname + '/remoteavatar-cert.pem')
-};
-const server = https.createServer(options, app).listen(process.env.PORT || 3000);
-const io = sio(server);
-
-
+import session from 'express-session';
+import redis from 'redis';
+import connectRedis from 'connect-redis';
+const app = express(),
+  options = { 
+  	key: fs.readFileSync(__dirname + '/remoteavatar-key.pem'),
+  	cert: fs.readFileSync(__dirname + '/remoteavatar-cert.pem')
+  },
+  server = https.createServer(options, app).listen(process.env.PORT || 3000),
+  io = sio(server),
+  client = redis.createClient(),
+  RedisStore = connectRedis(session),
+  redisStore = new RedisStore({client: client}),
+  sessionMiddleware = session({
+      store: redisStore,
+      secret: process.env.SESSION_SECRET || 'secret',
+      resave: false,
+      saveUninitialized: true
+  });
+app.use(sessionMiddleware);
+io.use((socket, next) => sessionMiddleware(socket.request, socket.request.res, next));
 app.use(express.static('public'));
-
-app.get('/r/:room', function(req, res){
-	console.log(111, req.params.room)
-    res.sendFile(__dirname + '/public/index.html');
-});
-app.get('*', function(req, res){
-	console.log(110)
-    res.sendFile(__dirname + '/public/index.html');
-});
-
-
-
-io.sockets.on('connection', function(socket) {
-	console.log(111);
-  // convenience function to log server messages on the client
-  function log() {
-    var array = ['Message from server:'];
-    array.push.apply(array, arguments);
-    socket.emit('log', array);
-  }
-
-  socket.on('message', function(message) {
-    log('Client said: ', message);
-    // for a real app, would be room-only (not broadcast)
-    socket.broadcast.emit('message', message);
-  });
-
-  socket.on('create or join', function(room) {
-    log('Received request to create or join room ' + room);
+app.use((req, res) => res.sendFile(__dirname + '/public/index.html'));
+io.sockets.on('connection', socket => {
+  let room = '';
+  // sending to all clients in the room (channel) except sender
+  socket.on('message', message => socket.broadcast.to(room).emit('message', message));
+  socket.on('find', () => {
+    const url = socket.request.headers.referer.split('/');
+    room = url[url.length - 1];
+    console.log(110, room, socket.request.session.id)
     let sr = io.sockets.adapter.rooms[room];
+    
+    client.lrange(room, 0, -1, function(err, reply) {
+      const host = 'sess:' + reply[0];
+      console.log('reply', reply);
+      if (reply.length === 0) {
+        client.rpush([room, socket.request.session.id], function(err, reply) {
+          console.log('reply1', err, reply);
+          socket.join(room);
+          socket.emit('create');
+        });
+      }
+      else if (reply.length === 1) {
 
-    if (sr === undefined) {
+        client.exists(host, function(err, reply) {
+          console.log('reply2', host, reply)
+          if (reply === 1) {
+              console.log('exists and join');
+              // a room with a host is found
+              client.rpush([room, socket.request.session.id], function(err, reply) {
+                console.log('reply1', err, reply);
+                socket.join(room);
+                socket.emit('join');
+              });
+          } else {
+            console.log('doesn\'t exist');
+            client.lset([room, 0, socket.request.session.id], function(err, reply) {
+              console.log('reply4', err, reply);
+              socket.join(room);
+              socket.emit('create');
+            });
+          }
+        });
+      }
+      else if (reply.length === 2) {
+        client.exists(host, function(err, reply) {
+          if (reply === 1) {
+              console.log('exists and full');
+              // max two clients
+              socket.emit('full');
+          } else {
+            client
+              .multi()
+              .del(room)
+              .client.rpush([room, socket.request.session.id])
+              .exec(function(err, reply) {
+                console.log('reply3', err, reply);
+                socket.join(room);
+                socket.emit('create');
+              })
+          }
+        });
+      }
+    });
+    /*if (sr === undefined) {
+      // no room with such name is found so create it
       socket.join(room);
-      log('Client ID ' + socket.id + ' created room ' + room);
-      socket.emit('created', room, socket.id);
-
+      socket.emit('create');
+      //socket.request.session.room = room;
+      //socket.request.session.save();
+      console.log(111, room, socket.request.session.save)
     } else if (sr.length === 1) {
-      log('Client ID ' + socket.id + ' joined room ' + room);
-      io.sockets.in(room).emit('join', room);
-      socket.join(room);
-      socket.emit('joined', room, socket.id);
-      io.sockets.in(room).emit('ready');
-    } else { // max two clients
-      socket.emit('full', room);
-    }
+      console.log(11, socket.id, sr)
+      // a room with a host is found
+      socket.emit('join');
+    } else {
+      // max two clients
+      socket.emit('full');
+    }*/
   });
-
-  socket.on('ipaddr', function() {
-    var ifaces = os.networkInterfaces();
-    for (var dev in ifaces) {
-      ifaces[dev].forEach(function(details) {
-        if (details.family === 'IPv4' && details.address !== '127.0.0.1') {
-          socket.emit('ipaddr', details.address);
-        }
-      });
-    }
+  socket.on('auth', data => {
+    data.sid = socket.id;
+    // sending to all clients in the room (channel) except sender
+    socket.broadcast.to(room).emit('approve', data);
   });
-
-  socket.on('bye', function(){
+  socket.on('accept', id => {
+    io.sockets.connected[id].join(room);
+    // sending to all clients in 'game' room(channel), include sender
+    io.in(room).emit('bridge');
+  });
+  socket.on('reject', () =>socket.emit('full'));
+  socket.on('bye', () => {
     console.log('received bye');
   });
-
 });

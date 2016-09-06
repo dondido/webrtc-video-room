@@ -1,0 +1,13 @@
+body {
+	background: grey
+}
+.request-access,
+.grant-access,
+.room-occupied {
+	display: none;
+}
+.join .request-access,
+.approve .grant-access,
+.full .room-occupied {
+	display: block;
+}
