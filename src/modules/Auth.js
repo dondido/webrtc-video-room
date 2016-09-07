@@ -26,6 +26,7 @@ export default class Auth extends React.Component {
       user = 'guest';
     });
     socket.on('approve', data => {
+      console.log(111, data)
       this.setState({room: 'approve'});
       this.setState({userName: data.userName});
       this.setState({message: data.message});
