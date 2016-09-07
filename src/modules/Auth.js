@@ -20,13 +20,12 @@ export default class Auth extends React.Component {
     let user;
     socket.on('create', () => user = 'host');
     socket.on('full', this.full);
-    socket.on('bridge', () => this.props.setUser(user));
+    socket.on('bridge', () => {this.props.setUser(user); console.log(112, user)});
     socket.on('join', () => {
       this.setState({room: 'join'});
       user = 'guest';
     });
     socket.on('approve', data => {
-      console.log(111, data)
       this.setState({room: 'approve'});
       this.setState({userName: data.userName});
       this.setState({message: data.message});

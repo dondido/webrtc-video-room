@@ -42,21 +42,23 @@ io.sockets.on('connection', socket => {
     const url = socket.request.headers.referer.split('/');
     room = url[url.length - 1];
     const chatRoom = io.sockets.adapter.rooms[room];
+    console.log(110, room, chatRoom, io.sockets.adapter.rooms)
     if (chatRoom === undefined) {
       // no room with such name is found so create it
       socket.join(room);
       socket.emit('create');
-      console.log(111, room, socket.request.session)
+      console.log(115, room, socket.request.session)
     } else if (chatRoom.length === 1) {
       // a room with a host is found
       let sessionRoom = socket.request.session[room];
-      console.log(112, room, sessionRoom)
+      console.log(112, room, Array.isArray(sessionRoom))
       if (Array.isArray(sessionRoom) === true &&
-        sessionRoom.includes(io.sockets.connected[Object.keys(chatRoom)[0]].request.sessionID) === true) {
+        sessionRoom.indexOf(io.sockets.connected[Object.keys(chatRoom.sockets)[0]].request.sessionID) !== 1) {
         socket.join(room);
         // sending to all clients in 'game' room(channel), include sender
         io.in(room).emit('bridge');
       } else {
+        console.log(117, room)
         socket.emit('join');
       }
     } else {
@@ -80,11 +82,11 @@ io.sockets.on('connection', socket => {
       };
       upsert(peerSocket.request.session, socket.request.sessionID);
       upsert(socket.request.session, id);
-      console.log(115, peerSocket.request.session, socket.request.sessionID, socket.request.session, id)
+      console.log(118, peerSocket.request.session, socket.request.sessionID, socket.request.session, id)
       peerSocket.join(room);
       // sending to all clients in 'game' room(channel), include sender
       io.in(room).emit('bridge');
   });
   socket.on('reject', () => socket.emit('full'));
-  socket.on('leave', () => socket.leave(room));
+  socket.on('disconnect', () => socket.leave(room));
 });

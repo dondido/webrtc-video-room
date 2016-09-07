@@ -29,7 +29,7 @@ class Room extends React.Component {
     this.props.router.setRouteLeaveHook(this.props.route, () => {
       this.localStream.getVideoTracks()[0].stop();
       this.haveMedia = false;
-      this.socket.emit('leave');
+      this.socket.emit('disconnect');
     });
   }
   render(){
