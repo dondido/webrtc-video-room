@@ -18,7 +18,10 @@ export default class Auth extends React.Component {
   componentDidMount() {
     const socket = this.props.socket;
     let user;
-    socket.on('create', () => user = 'host');
+    socket.on('create', () => {
+      user = 'host';
+      localStorage.setItem('rooms', JSON.stringify({aaa: {user: 'host'}}))
+    });
     socket.on('full', this.full);
     socket.on('bridge', () => {this.props.setUser(user); console.log(112, user)});
     socket.on('join', () => {
