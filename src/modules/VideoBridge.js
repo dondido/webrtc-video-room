@@ -92,7 +92,13 @@ export default class VideoBridge extends React.Component {
         // data channel
         dc = e.channel;
         setupDataHandlers();
-        sendData('hello');
+        sendData({
+          peerMediaStream: {
+            video: this.props.localStream.getVideoTracks()[0].enabled,
+            audio: this.props.localStream.getAudioTracks()[0].enabled
+          }
+        });
+        //sendData('hello');
     };
     // wait for local media to be ready
     this.props.getUserMedia.then(() => {
