@@ -19,6 +19,7 @@ class Room extends React.Component {
   }).catch(e => alert('getUserMedia() error: ' + e.name))
   socket = io.connect()
   setUser = user => this.setState({user: user})
+  toggleVideo = () => this.localStream.getVideoTracks()[0].enabled = !this.localStream.getVideoTracks()[0].enabled;
   componentDidMount() {
     this.getUserMedia
       .then(stream => {
@@ -40,9 +41,9 @@ class Room extends React.Component {
         <div className="media-port">
           <video ref="localVideo" autoPlay muted></video>
           <button onClick={this.handleAudio} data-ref="audio">Audio</button>
-          <button onClick={this.handleVideo} data-ref="video">Video</button>
+          <button onClick={this.toggleVideo} data-ref="video">Video</button>
           <button onClick={this.handleFullScreen} data-ref="full">Full</button>
-          {this.state.user !== '' && <VideoBridge user={this.state.user} localStream={this.localStream} haveMedia={this.haveMedia} getUserMedia={this.getUserMedia} socket={this.socket} />}
+          {this.state.user !== '' && <VideoBridge user={this.state.user} setUser={this.setUser} localStream={this.localStream} haveMedia={this.haveMedia} getUserMedia={this.getUserMedia} socket={this.socket} />}
         </div>
         <div>Waiting for someone to join this room:
         	<a href={href}>{href}</a>

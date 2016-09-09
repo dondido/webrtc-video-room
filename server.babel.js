@@ -55,8 +55,10 @@ io.sockets.on('connection', socket => {
       if (Array.isArray(sessionRoom) === true &&
         sessionRoom.indexOf(io.sockets.connected[Object.keys(chatRoom.sockets)[0]].request.sessionID) !== 1) {
         socket.join(room);
-        // sending to all clients in 'game' room(channel), include sender
-        io.in(room).emit('bridge');
+        // sending to all clients in the room (channel) except sender
+        socket.broadcast.to(room).emit('bridge', 'host');
+        // sending to sender-client only
+        socket.emit('bridge', 'guest');
       } else {
         console.log(117, room)
         socket.emit('join');

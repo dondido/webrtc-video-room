@@ -43,9 +43,10 @@ export default class VideoBridge extends React.Component {
               console.log(msg);
           };
           dc.onclose = () => {
-              this.props.localStream.getVideoTracks()[0].stop();
+              //this.props.localStream.getVideoTracks()[0].stop();
               remoteStream.getVideoTracks()[0].stop();
               haveMedia = false;
+              this.props.setUser('');
               console.log('The Data Channel is Closed');
           };
       },
