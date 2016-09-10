@@ -37,7 +37,8 @@ io.sockets.on('connection', socket => {
     };
   console.log(111, io.sockets.connected[socket.id].request.session.save)
   // sending to all clients in the room (channel) except sender
-  socket.on('message', message => socket.broadcast.to(room).emit('message', message));
+  socket.on('message', message => {console.log(200, message);
+    socket.broadcast.to(room).emit('message', message)});
   socket.on('find', () => {
     const url = socket.request.headers.referer.split('/');
     room = url[url.length - 1];
@@ -90,5 +91,5 @@ io.sockets.on('connection', socket => {
       io.in(room).emit('bridge');
   });
   socket.on('reject', () => socket.emit('full'));
-  socket.on('disconnect', () => socket.leave(room));
+  socket.on('leave', () => {console.log(119, 'disconnect', room);socket.leave(room);});
 });

@@ -14,7 +14,11 @@ export default class VideoBridge extends React.Component {
           if (message.type === 'offer') {
               // set remote description and answer
               pc.setRemoteDescription(new RTCSessionDescription(message));
-              pc.createAnswer(gotDescription, handleError);
+              pc.createAnswer()
+                .then(setDescription)
+                .then(sendDescription)
+                .catch(handleError); // An error occurred, so handle the failure to connect
+
           } else if (message.type === 'answer') {
               // set remote description
               pc.setRemoteDescription(new RTCSessionDescription(message));
@@ -29,18 +33,14 @@ export default class VideoBridge extends React.Component {
           }
       },
       sendData = msg => dc.send(JSON.stringify(msg)),
+      setLocalDescription = offer => pc.setLocalDescription(offer),
       // send the offer to a server to be forwarded to the other peer
-      gotDescription = localDesc => {
-          pc.setLocalDescription(localDesc);
-          console.log('localDesc', localDesc)
-          this.props.socket.send(localDesc);
-      },
+      sendDescription = () => this.props.socket.send(pc.localDescription),
       // Set up the data channel message handler
       setupDataHandlers = () => {
-          dc.onmessage = function(e) {
+          dc.onmessage = e => {
               var msg = JSON.parse(e.data);
-              console.log('received message over data channel:');
-              console.log(msg);
+              console.log('received message over data channel:' + msg);
           };
           dc.onclose = () => {
               //this.props.localStream.getVideoTracks()[0].stop();
@@ -50,22 +50,26 @@ export default class VideoBridge extends React.Component {
               console.log('The Data Channel is Closed');
           };
       },
+      handleError = e => console.log(e),
       // If RTCPeerConnection is ready and we have local media,
       // attach media to pc
-      attachMediaIfReady = () => { 
-          console.log('attachMediaIfReady', pc, haveMedia, this.props.user);
-          if (pc && haveMedia) {
-              pc.addStream(this.props.localStream);
-              // call if we were the last to connect (to increase
-              // chances that everything is set up properly at both ends)
-              if (this.props.user === 'host') {
-                  dc = pc.createDataChannel('chat');
-                  setupDataHandlers();
-                  pc.createOffer(gotDescription, handleError);
-              }
+      attachMediaIfReady = () => {
+        haveMedia = this.props.haveMedia;
+        console.log('attachMediaIfReady', pc, haveMedia, this.props.user);
+        if (pc && haveMedia) {
+          pc.addStream(this.props.localStream);
+          // call if we were the last to connect (to increase
+          // chances that everything is set up properly at both ends)
+          if (this.props.user === 'host') {
+              dc = pc.createDataChannel('chat');
+              setupDataHandlers();
+              pc.createOffer()
+                .then(setDescription)
+                .then(sendDescription)
+                .catch(handleError); // An error occurred, so handle the failure to connect
           }
-      },
-      handleError = e => console.log(e);
+        }
+      };
     // chrome polyfill for connection between the local device and a remote peer
     window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
     // set up the peer connection
@@ -101,10 +105,7 @@ export default class VideoBridge extends React.Component {
         //sendData('hello');
     };
     // wait for local media to be ready
-    this.props.getUserMedia.then(() => {
-      haveMedia = this.props.haveMedia;
-      attachMediaIfReady();
-    });
+    this.props.getUserMedia.then(attachMediaIfReady);
     this.props.socket.on('message', onMessage);
   }
   render(){
