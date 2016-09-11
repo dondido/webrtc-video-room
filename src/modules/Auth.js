@@ -23,9 +23,7 @@ export default class Auth extends React.Component {
       localStorage.setItem('rooms', JSON.stringify({aaa: {user: 'host'}}))
     });
     socket.on('full', this.full);
-    socket.on('bridge', role => {
-      user = role || user; 
-      this.props.initRemote(user); console.log(112, user)});
+    socket.on('bridge', role => this.props.initRemote(role || user));
     socket.on('join', () => {
       this.setState({room: 'join'});
       user = 'guest';

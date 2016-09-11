@@ -16,22 +16,15 @@ export default class VideoBridge extends React.Component {
   componentDidMount() {
     // chrome polyfill for connection between the local device and a remote peer
     window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
-    //this.pc = new RTCPeerConnection({iceServers: [{url: 'stun:stun.l.google.com:19302'}]});
-    //this.setPeerConnection();
     this.getUserMedia
-      .then(stream => {
-        /*this.localStream = stream;
-        this.pc.addStream(stream);
-        console.log(111, 'this.localStream', this.localStream)*/
-        //this.haveMedia = true;
-        this.refs.localVideo.src = window.URL.createObjectURL(stream);
-      });
+      .then(stream => this.refs.localVideo.src = window.URL.createObjectURL(stream));
     this.props.socket.on('message', this.onMessage);
   }
-  setPeerConnection() {
+  componentWillUnmount() {
+    this.localStream.getVideoTracks()[0].stop();
+    this.props.socket.emit('leave');
   }
   onMessage = message => {
-      console.log('message from peer:', message);
       if (message.type === 'offer') {
           // set remote description and answer
           this.pc.setRemoteDescription(new RTCSessionDescription(message));
@@ -63,33 +56,24 @@ export default class VideoBridge extends React.Component {
           console.log('received message over data channel:' + msg);
       };
       this.dc.onclose = () => {
-          //this.props.localStream.getVideoTracks()[0].stop();
           this.remoteStream.getVideoTracks()[0].stop();
-          //haveMedia = false;
-          //this.role = '';
-          //this.props.setUser('');
-          
           console.log('The Data Channel is Closed');
       };
   }
   setDescription = offer => this.pc.setLocalDescription(offer)
   // send the offer to a server to be forwarded to the other peer
-  sendDescription = () => {console.log(201, 'sendDescription', this.pc.localDescription);this.props.socket.send(this.pc.localDescription)}
+  sendDescription = () => this.props.socket.send(this.pc.localDescription)
   handleError = e => console.log(e)
   init(role) {
-      // If RTCPeerConnection is ready and we have local media,
-      // attach media to pc
     // wait for local media to be ready
     const attachMediaIfReady = () => {
       this.dc = this.pc.createDataChannel('chat');
-        this.setupDataHandlers();
-        console.log(200, 'createOffer')
-        this.pc.createOffer()
-          .then(this.setDescription)
-          .then(this.sendDescription)
-          .catch(this.handleError); // An error occurred, so handle the failure to connect
+      this.setupDataHandlers();
+      this.pc.createOffer()
+        .then(this.setDescription)
+        .then(this.sendDescription)
+        .catch(this.handleError); // An error occurred, so handle the failure to connect
     }
-    console.log('attachMediaIfReady', this.pc, this.localStream, /*this.props.user*/);
     // set up the peer connection
     // this is one of Google's public STUN servers
     // make sure your offer/answer role does not change. If user A does a SLD
@@ -125,6 +109,7 @@ export default class VideoBridge extends React.Component {
     };
     this.getUserMedia
       .then(stream => {
+        // attach local media to the peer connection
         this.localStream = stream;
         this.pc.addStream(stream);
         // call if we were the last to connect (to increase
@@ -133,7 +118,6 @@ export default class VideoBridge extends React.Component {
           this.getUserMedia.then(attachMediaIfReady);
         }
       });
-    
   }
   toggleVideo = () => this.localStream.getVideoTracks()[0].enabled = !this.localStream.getVideoTracks()[0].enabled;
   render(){

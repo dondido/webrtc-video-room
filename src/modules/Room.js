@@ -7,15 +7,7 @@ class Room extends React.Component {
     super(props);
   }
   socket = io.connect()
-  initRemote = user => {
-    this.refs.videoBridge.init(user); console.log(113, user);}
-  componentDidMount() {
-    this.props.router.setRouteLeaveHook(this.props.route, () => {
-      //this.localStream.getVideoTracks()[0].stop();
-      //this.haveMedia = false;
-      this.socket.emit('leave');
-    });
-  }
+  initRemote = user => this.refs.videoBridge.init(user)
   render(){
   	const href = window.location.href;
     return (
