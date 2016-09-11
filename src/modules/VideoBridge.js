@@ -4,7 +4,7 @@ export default class VideoBridge extends React.Component {
   constructor(props) {
     super(props);
   }
-  componentDidMount() {
+  init(role, localStream) {
     let dc,
       pc,
       remoteStream,
@@ -33,9 +33,9 @@ export default class VideoBridge extends React.Component {
           }
       },
       sendData = msg => dc.send(JSON.stringify(msg)),
-      setLocalDescription = offer => pc.setLocalDescription(offer),
+      setDescription = offer => pc.setLocalDescription(offer),
       // send the offer to a server to be forwarded to the other peer
-      sendDescription = () => this.props.socket.send(pc.localDescription),
+      sendDescription = () => {console.log(201, 'sendDescription', pc.localDescription);this.props.socket.send(pc.localDescription)},
       // Set up the data channel message handler
       setupDataHandlers = () => {
           dc.onmessage = e => {
@@ -45,8 +45,9 @@ export default class VideoBridge extends React.Component {
           dc.onclose = () => {
               //this.props.localStream.getVideoTracks()[0].stop();
               remoteStream.getVideoTracks()[0].stop();
-              haveMedia = false;
-              this.props.setUser('');
+              //haveMedia = false;
+              role = '';
+              //this.props.setUser('');
               console.log('The Data Channel is Closed');
           };
       },
@@ -55,14 +56,15 @@ export default class VideoBridge extends React.Component {
       // attach media to pc
       attachMediaIfReady = () => {
         haveMedia = this.props.haveMedia;
-        console.log('attachMediaIfReady', pc, haveMedia, this.props.user);
-        if (pc && haveMedia) {
-          pc.addStream(this.props.localStream);
+        console.log('attachMediaIfReady', pc, localStream, /*this.props.user*/);
+        if (pc/* && haveMedia*/) {
+          pc.addStream(localStream);
           // call if we were the last to connect (to increase
           // chances that everything is set up properly at both ends)
-          if (this.props.user === 'host') {
+          if (role === 'host') {
               dc = pc.createDataChannel('chat');
               setupDataHandlers();
+              console.log(200, 'createOffer')
               pc.createOffer()
                 .then(setDescription)
                 .then(sendDescription)
@@ -98,8 +100,8 @@ export default class VideoBridge extends React.Component {
         setupDataHandlers();
         sendData({
           peerMediaStream: {
-            video: this.props.localStream.getVideoTracks()[0].enabled,
-            audio: this.props.localStream.getAudioTracks()[0].enabled
+            video: localStream.getVideoTracks()[0].enabled/*,
+            audio: this.props.localStream.getAudioTracks()[0].enabled*/
           }
         });
         //sendData('hello');

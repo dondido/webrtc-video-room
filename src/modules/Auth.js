@@ -25,7 +25,7 @@ export default class Auth extends React.Component {
     socket.on('full', this.full);
     socket.on('bridge', role => {
       user = role || user; 
-      this.props.setUser(user); console.log(112, user)});
+      this.props.initRemote(user); console.log(112, user)});
     socket.on('join', () => {
       this.setState({room: 'join'});
       user = 'guest';

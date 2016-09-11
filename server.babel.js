@@ -91,5 +91,8 @@ io.sockets.on('connection', socket => {
       io.in(room).emit('bridge');
   });
   socket.on('reject', () => socket.emit('full'));
-  socket.on('leave', () => {console.log(119, 'disconnect', room);socket.leave(room);});
+  socket.on('leave', () => {
+    // sending to all clients in the room (channel) except sender
+    // socket.broadcast.to(room).emit('abandoned', data);
+    console.log(119, 'disconnect', room);socket.leave(room);});
 });
