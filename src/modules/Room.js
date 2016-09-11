@@ -2,6 +2,10 @@ import React from 'react'
 import { withRouter } from 'react-router'
 import VideoBridge from './VideoBridge'
 import Auth from './Auth'
+
+import { connect } from 'react-redux'
+import { addRooms } from '../actions/rooms'
+
 class Room extends React.Component {
   constructor(props) {
     super(props);
@@ -21,4 +25,8 @@ class Room extends React.Component {
     );
   }
 }
-export default withRouter(Room)
+export default connect(
+  state => {console.log(111, state);return { number: state.rooms }},
+  { addRooms }
+)(Room)
+//export default withRouter(Room)
