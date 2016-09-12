@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux'
 
 export default class Join extends React.Component {
   constructor(props) {
@@ -27,3 +28,4 @@ export default class Join extends React.Component {
     );
   }
 }
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Room));

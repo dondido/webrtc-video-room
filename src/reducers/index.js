@@ -1,9 +1,8 @@
-const initialState = {
-  rooms: []
-}
-export default function updateRooms(state = initialState, action) {
-  if(action.type === 'ADD_ROOM') {
-    return { rooms: [...state.rooms, action.room] }
-  }
-  return state
-}
+import { combineReducers } from 'redux';
+// Reducers
+import roomReducer from './room-reducer';
+// Combine Reducers
+const reducers = combineReducers({
+    rooms: roomReducer
+});
+export default reducers;

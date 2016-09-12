@@ -2,7 +2,6 @@ import React from 'react'
 import { withRouter } from 'react-router'
 import VideoBridge from './VideoBridge'
 import Auth from './Auth'
-
 import { connect } from 'react-redux'
 import { addRooms } from '../actions/rooms'
 
@@ -14,6 +13,8 @@ class Room extends React.Component {
   initRemote = user => this.refs.videoBridge.init(user)
   render(){
   	const href = window.location.href;
+    this.props.addRoom();
+    console.log('this.props', this.props)
     return (
       <div>
         <Auth socket={this.socket} initRemote={this.initRemote} />
@@ -25,8 +26,15 @@ class Room extends React.Component {
     );
   }
 }
-export default connect(
-  state => {console.log(111, state);return { number: state.rooms }},
-  { addRooms }
-)(Room)
-//export default withRouter(Room)
+const mapStateToProps = store => ({rooms: store.rooms.rooms});
+const mapDispatchToProps = (dispatch, ownProps) =>
+   ({
+    addRoom: function() {
+      console.log('ownProps', ownProps)
+      store.dispatch({
+        type: 'ADD_ROOM',
+        room: ownProps.params.room
+      });
+    }
+  });
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Room));
