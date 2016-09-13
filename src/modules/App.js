@@ -1,7 +1,8 @@
-import React from 'react';
+import React from 'react'
+import { withRouter, Link } from 'react-router'
 import { connect } from 'react-redux'
 
-export default class Join extends React.Component {
+class Join extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -17,15 +18,32 @@ export default class Join extends React.Component {
     this.context.router.push('r/' + this.state.value);
   }
   handleChange = e => this.setState({value: e.target.value})
+  componentDidMount() {
+    console.log(111, this.state)
+  }
   render(){
+    
     return (
       <div>
         <p>Please enter a room name.</p>
         <input type="text" name="room" value={this.state.value} onChange={this.handleChange} />
         <button type="button" onClick={this.joinRoom}>Join</button>
         <button type="button" onClick={this.setRoom}>Random</button>
+        {this.props.rooms.map(room => <Link to='/r/{room}'>{room}</Link>)}
       </div>
     );
   }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Room));
+const mapStateToProps = store => {console.log(114, store); return {
+  rooms: store.rooms}};
+const mapDispatchToProps = (dispatch, ownProps) =>
+   ({
+    addRoom: function() {
+      console.log('ownProps', ownProps)
+      store.dispatch({
+        type: 'ADD_ROOM',
+        room: ownProps.params.room
+      });
+    }
+  });
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Join));

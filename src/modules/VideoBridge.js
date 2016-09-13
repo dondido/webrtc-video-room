@@ -21,7 +21,9 @@ export default class VideoBridge extends React.Component {
     this.props.socket.on('message', this.onMessage);
   }
   componentWillUnmount() {
-    this.localStream.getVideoTracks()[0].stop();
+    if(this.localStream !== undefined) {
+      this.localStream.getVideoTracks()[0].stop();
+    }
     this.props.socket.emit('leave');
   }
   onMessage = message => {
