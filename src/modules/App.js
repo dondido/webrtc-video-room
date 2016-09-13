@@ -29,7 +29,7 @@ class Join extends React.Component {
         <input type="text" name="room" value={this.state.value} onChange={this.handleChange} />
         <button type="button" onClick={this.joinRoom}>Join</button>
         <button type="button" onClick={this.setRoom}>Random</button>
-        {this.props.rooms.map(room => <Link to='/r/{room}'>{room}</Link>)}
+        {this.props.rooms.map(room => <Link key={room} to='/r/{room}'>{room}</Link>)}
       </div>
     );
   }

@@ -11,3 +11,29 @@ body {
 .full .room-occupied {
 	display: block;
 }
+.remote-video {
+    display: block;
+    height: 100%;
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+    opacity: 0;
+    position: absolute;
+    -moz-transform: rotateY(180deg);
+    -ms-transform: rotateY(180deg);
+    -o-transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+    transform: rotateY(180deg);
+    transition: opacity 1s;
+    width: 100%;
+}
+.local-video {
+    border: 1px solid gray;
+    bottom: 20px;
+    left: 20px;
+    max-height: 17%;
+    max-width: 17%;
+    opacity: 0;
+    position: absolute;
+    transition: opacity 1s;
+}
