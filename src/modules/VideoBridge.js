@@ -98,7 +98,7 @@ export default class VideoBridge extends React.Component {
         console.log('onaddstream', e) 
         this.remoteStream = e.stream;
         this.refs.remoteVideo.src = window.URL.createObjectURL(this.remoteStream);
-        this.state.setState({bridge: 'bridge'});
+        this.setState({bridge: 'bridge'});
     };
     this.pc.ondatachannel = e => {
         // data channel
@@ -111,7 +111,7 @@ export default class VideoBridge extends React.Component {
         });
         //sendData('hello');
     };
-    this.state.setState({bridge: ''};
+    this.setState({bridge: ''});
     this.getUserMedia
       .then(stream => {
         // attach local media to the peer connection
@@ -127,12 +127,12 @@ export default class VideoBridge extends React.Component {
   toggleVideo = () => this.localStream.getVideoTracks()[0].enabled = !this.localStream.getVideoTracks()[0].enabled;
   render(){
     return (
-      <div className="video-bridge {bridge}">
-        <video class="local-video" ref="localVideo" autoPlay muted></video>
+      <div className={this.state.bridge}>
+        <video className="remote-video" ref="remoteVideo" autoPlay></video>
+        <video className="local-video" ref="localVideo" autoPlay muted></video>
         <button onClick={this.handleAudio} data-ref="audio">Audio</button>
         <button onClick={this.toggleVideo} data-ref="video">Video</button>
         <button onClick={this.handleFullScreen} data-ref="full">Full</button>
-        <video class="remote-video" ref="remoteVideo" autoPlay></video>
       </div>
     );
   }
