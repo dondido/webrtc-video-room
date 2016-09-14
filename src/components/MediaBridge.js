@@ -28,7 +28,7 @@ export default class MediaBridge extends React.Component {
     }
     this.props.socket.emit('leave');
   }
-  this.onHangup = () => {
+  onHangup = () => {
     this.setState({bridge: 'media-bridge'});
   }
   onMessage = message => {

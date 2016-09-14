@@ -1,6 +1,6 @@
 import React from 'react'
 import { withRouter } from 'react-router'
-import VideoBridge from './VideoBridge'
+import MediaBridge from './MediaBridge'
 import Auth from './Auth'
 import { connect } from 'react-redux'
 import store from '../store'
@@ -11,7 +11,7 @@ class Room extends React.Component {
     super(props);
   }
   socket = io.connect()
-  initRemote = user => this.refs.videoBridge.init(user)
+  initRemote = user => this.refs.mediaBridge.init(user)
   componentDidMount() {
     this.props.addRoom();
     console.log('this.props', this.props)

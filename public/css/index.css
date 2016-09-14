@@ -1,5 +1,6 @@
 body {
-	background: grey
+	background: grey;
+	margin: 0;
 }
 .request-access,
 .grant-access,
