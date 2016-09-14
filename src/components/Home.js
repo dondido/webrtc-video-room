@@ -2,7 +2,7 @@ import React from 'react'
 import { withRouter, Link } from 'react-router'
 import { connect } from 'react-redux'
 
-class Join extends React.Component {
+class Home extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -18,9 +18,6 @@ class Join extends React.Component {
     this.context.router.push('r/' + this.state.value);
   }
   handleChange = e => this.setState({value: e.target.value})
-  componentDidMount() {
-    console.log(111, this.state)
-  }
   render(){
     
     return (
@@ -46,4 +43,4 @@ const mapDispatchToProps = (dispatch, ownProps) =>
       });
     }
   });
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Join));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Home));

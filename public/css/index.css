@@ -29,12 +29,20 @@ body {
     object-fit: cover;
     left: 0;
     bottom: 0;
-    transition: all 1s;
+    transition: all .3s;
 }
-.bridge .local-video {
+.established .local-video {
 	border: 1px solid gray;
     bottom: 20px;
     left: 20px;
     max-height: 17%;
     max-width: 17%; 
+}
+.media-bridge {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+.auth {
+    position: relative;
 }

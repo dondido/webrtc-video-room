@@ -21,8 +21,8 @@ class Room extends React.Component {
     
     return (
       <div>
-        <VideoBridge ref="videoBridge" socket={this.socket} />
-        <Auth socket={this.socket} initRemote={this.initRemote} />
+        <MediaBridge ref="mediaBridge" socket={this.socket} />
+        <Auth socket={this.socket} initRemote={this.initRemote} className="auth" />
         <div>Waiting for someone to join this room:
         	<a href={href}>{href}</a>
         </div>

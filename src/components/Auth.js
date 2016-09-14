@@ -6,15 +6,15 @@ export default class Auth extends React.Component {
     super(props);
   }
   state = {
-    room: '',
+    room: 'auth',
     sid: '',
     userName: '',
     message: ''
   }
   hideAuth() {
-    this.setState({room: ''});
+    this.setState({room: 'auth'});
   } 
-  full = () => this.setState({room: 'full'})
+  full = () => this.setState({room: 'auth full'})
   componentDidMount() {
     const socket = this.props.socket;
     let user;
@@ -25,11 +25,11 @@ export default class Auth extends React.Component {
     socket.on('full', this.full);
     socket.on('bridge', role => this.props.initRemote(role || user));
     socket.on('join', () => {
-      this.setState({room: 'join'});
+      this.setState({room: 'auth join'});
       user = 'guest';
     });
     socket.on('approve', data => {
-      this.setState({room: 'approve'});
+      this.setState({room: 'auth approve'});
       this.setState({userName: data.userName});
       this.setState({message: data.message});
       this.setState({sid: data.sid});

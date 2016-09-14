@@ -1,11 +1,11 @@
 import React from 'react'
 
-export default class VideoBridge extends React.Component {
+export default class MediaBridge extends React.Component {
   constructor(props) {
     super(props);
   }
   state = {
-    bridge: '',
+    bridge: 'media-bridge',
     audio: false,
     video: true,
     full: false
@@ -20,12 +20,16 @@ export default class VideoBridge extends React.Component {
     this.getUserMedia
       .then(stream => this.refs.localVideo.src = window.URL.createObjectURL(stream));
     this.props.socket.on('message', this.onMessage);
+    this.props.socket.on('hangup', this.onHangup);
   }
   componentWillUnmount() {
     if(this.localStream !== undefined) {
       this.localStream.getVideoTracks()[0].stop();
     }
     this.props.socket.emit('leave');
+  }
+  this.onHangup = () => {
+    this.setState({bridge: 'media-bridge'});
   }
   onMessage = message => {
       if (message.type === 'offer') {
@@ -98,7 +102,7 @@ export default class VideoBridge extends React.Component {
         console.log('onaddstream', e) 
         this.remoteStream = e.stream;
         this.refs.remoteVideo.src = window.URL.createObjectURL(this.remoteStream);
-        this.setState({bridge: 'bridge'});
+        this.setState({bridge: 'media-bridge established'});
     };
     this.pc.ondatachannel = e => {
         // data channel
@@ -111,7 +115,6 @@ export default class VideoBridge extends React.Component {
         });
         //sendData('hello');
     };
-    this.setState({bridge: ''});
     this.getUserMedia
       .then(stream => {
         // attach local media to the peer connection

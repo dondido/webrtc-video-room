@@ -93,6 +93,6 @@ io.sockets.on('connection', socket => {
   socket.on('reject', () => socket.emit('full'));
   socket.on('leave', () => {
     // sending to all clients in the room (channel) except sender
-    // socket.broadcast.to(room).emit('abandoned', data);
+    socket.broadcast.to(room).emit('hangup', data);
     console.log(119, 'disconnect', room);socket.leave(room);});
 });
