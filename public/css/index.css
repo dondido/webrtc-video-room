@@ -6,8 +6,10 @@ button {
     font-family: Sans-Serif;
 }
 @media(max-width: 1024px) {
-    body,input,textarea {
-         font-size: 1em;
+    body,
+    input,
+    button {
+        font-size: 1em;
     }
 }
 body {
@@ -89,4 +91,7 @@ input[type=text] {
     -webkit-box-shadow: 1px 1px 5px 0 rgba(0,0,0,.5);
     -moz-box-shadow: 1px 1px 5px 0 rgba(0,0,0,.5);
     box-shadow: 1px 1px 5px 0 rgba(0,0,0,.5);
+}
+.media-controls {
+	position: relative;
 }

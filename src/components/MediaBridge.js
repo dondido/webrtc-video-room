@@ -18,7 +18,12 @@ export default class MediaBridge extends React.Component {
     // chrome polyfill for connection between the local device and a remote peer
     window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
     this.getUserMedia
-      .then(stream => this.refs.localVideo.src = window.URL.createObjectURL(stream));
+      .then(stream => {
+          this.localStream = stream;
+          this.localStream.getVideoTracks()[0].enabled = this.state.video;
+          this.localStream.getAudioTracks()[0].enabled = this.state.audio;
+          this.refs.localVideo.src = window.URL.createObjectURL(stream);
+        });
     this.props.socket.on('message', this.onMessage);
     this.props.socket.on('hangup', this.onHangup);
   }
@@ -115,27 +120,26 @@ export default class MediaBridge extends React.Component {
         });
         //sendData('hello');
     };
-    this.getUserMedia
-      .then(stream => {
-        // attach local media to the peer connection
-        this.localStream = stream;
-        this.pc.addStream(stream);
-        // call if we were the last to connect (to increase
-        // chances that everything is set up properly at both ends)
-        if (role === 'host') {
-          this.getUserMedia.then(attachMediaIfReady);
-        }
-      });
+    // attach local media to the peer connection
+    this.pc.addStream(this.localStream);
+    // call if we were the last to connect (to increase
+    // chances that everything is set up properly at both ends)
+    if (role === 'host') {
+      this.getUserMedia.then(attachMediaIfReady);
+    }  
   }
-  toggleVideo = () => this.localStream.getVideoTracks()[0].enabled = !this.localStream.getVideoTracks()[0].enabled;
+  toggleVideo = () => this.localStream.getVideoTracks()[0].enabled = this.state.video = !this.state.video
+  toggleAudio = () => this.localStream.getAudioTracks()[0].enabled = this.state.audio = !this.state.audio
   render(){
     return (
       <div className={this.state.bridge}>
         <video className="remote-video" ref="remoteVideo" autoPlay></video>
         <video className="local-video" ref="localVideo" autoPlay muted></video>
-        <button onClick={this.handleAudio} data-ref="audio">Audio</button>
-        <button onClick={this.toggleVideo} data-ref="video">Video</button>
-        <button onClick={this.handleFullScreen} data-ref="full">Full</button>
+        <div className="media-controls">
+          <button onClick={this.handleAudio} className={'audio-button-' + this.state.audio}>Audio</button>
+          <button onClick={this.toggleVideo} className={'video-button-' + this.state.video}>Video</button>
+          <button onClick={this.handleFullScreen}>Full</button>
+        </div>
       </div>
     );
   }
