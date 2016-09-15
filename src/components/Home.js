@@ -21,12 +21,15 @@ class Home extends React.Component {
   render(){
     
     return (
-      <div>
-        <p>Please enter a room name.</p>
-        <input type="text" name="room" value={this.state.value} onChange={this.handleChange} />
-        <button type="button" onClick={this.joinRoom}>Join</button>
-        <button type="button" onClick={this.setRoom}>Random</button>
-        {this.props.rooms.map(room => <Link key={room} to='/r/{room}'>{room}</Link>)}
+      <div className="home">
+        <div>
+          <p>Please enter a room name.</p>
+          <input type="text" name="room" value={this.state.value} onChange={this.handleChange} />
+          <button className="primary-button" type="button" onClick={this.joinRoom}>Join</button>
+          <button className="primary-button" type="button" onClick={this.setRoom}>Random</button>
+          {this.props.rooms.length !== 0 && <div>Recently used rooms:</div>}
+          {this.props.rooms.map(room => <Link key={room} className="recent-room" to='/r/{room}'>{room}</Link>)}
+        </div>
       </div>
     );
   }

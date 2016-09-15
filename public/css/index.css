@@ -1,6 +1,35 @@
+body,
+input,
+button {
+    font-size: 1.6vw;
+    margin: 0;
+    font-family: Sans-Serif;
+}
+@media(max-width: 1024px) {
+    body,input,textarea {
+         font-size: 1em;
+    }
+}
 body {
-	background: grey;
+	background: #333;
 	margin: 0;
+    color: white;
+}
+input[type=text] {
+    border: none;
+    border-bottom: solid 2px #4c4c4f;
+    font-size: 1em;
+    background-color: transparent;
+    color: #fff;
+    padding: .4em 0;
+    margin: 2ex 0;
+    width: 20em;
+    display: block;
+}
+.home {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .request-access,
 .grant-access,
@@ -9,22 +38,21 @@ body {
 }
 .join .request-access,
 .approve .grant-access,
-.full .room-occupied {
+.full .room-occupied,
+.recent-room {
 	display: block;
+}
+.recent-room {
+    color: #4285F4;
+    margin: 1ex 1em;
 }
 .remote-video {
     display: block;
-    height: 100%;
     max-height: 100%;
     max-width: 100%;
     object-fit: cover;
-    position: absolute;
-    width: 100%;
 }
 .local-video {
-    position: absolute;
-	height: 100%;
-	width: 100%;
     max-height: 100%;
     max-width: 100%;
     object-fit: cover;
@@ -39,11 +67,26 @@ body {
     max-height: 17%;
     max-width: 17%; 
 }
-.media-bridge {
+.media-bridge,
+.local-video,
+.remote-video {
     position: absolute;
     height: 100%;
     width: 100%;
 }
 .auth {
     position: relative;
+}
+.primary-button {
+    background-color: #4285F4;
+    border: none;
+    color: white;
+    font-size: 0.8em;
+    margin: 0 5px 20px 5px;
+    width: 8em;
+    height: 2.75em;
+    padding: 0.5em 0.7em 0.5em 0.7em;
+    -webkit-box-shadow: 1px 1px 5px 0 rgba(0,0,0,.5);
+    -moz-box-shadow: 1px 1px 5px 0 rgba(0,0,0,.5);
+    box-shadow: 1px 1px 5px 0 rgba(0,0,0,.5);
 }
