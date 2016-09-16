@@ -95,3 +95,10 @@ input[type=text] {
 .media-controls {
 	position: relative;
 }
+.audio-button-true,
+.audio-button-false {
+    width: 2.5em;
+    height: 2.5em;
+    border-radius: 50%;
+    background: rgba(44, 44, 44, 0.6);
+}

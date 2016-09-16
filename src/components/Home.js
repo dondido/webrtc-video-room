@@ -35,7 +35,7 @@ class Home extends React.Component {
   }
 }
 const mapStateToProps = store => {console.log(114, store); return {
-  rooms: store.rooms}};
+  rooms: store.rooms.concat()}};
 const mapDispatchToProps = (dispatch, ownProps) =>
    ({
     addRoom: function() {

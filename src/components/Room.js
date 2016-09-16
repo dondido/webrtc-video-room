@@ -30,7 +30,7 @@ class Room extends React.Component {
     );
   }
 }
-const mapStateToProps = store => ({rooms: store.rooms});
+const mapStateToProps = store => ({rooms: new Set([...store.rooms])});
 const mapDispatchToProps = (dispatch, ownProps) =>
    ({
     addRoom: function() {
