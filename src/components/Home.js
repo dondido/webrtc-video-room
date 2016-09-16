@@ -28,14 +28,14 @@ class Home extends React.Component {
           <button className="primary-button" type="button" onClick={this.joinRoom}>Join</button>
           <button className="primary-button" type="button" onClick={this.setRoom}>Random</button>
           {this.props.rooms.length !== 0 && <div>Recently used rooms:</div>}
-          {this.props.rooms.map(room => <Link key={room} className="recent-room" to={'/r/' + room}>{room}</Link>)}
+          {[...this.props.rooms].map(room => <Link key={room} className="recent-room" to={'/r/' + room}>{room}</Link>)}
         </div>
       </div>
     );
   }
 }
 const mapStateToProps = store => {console.log(114, store); return {
-  rooms: store.rooms.concat()}};
+  rooms: new Set([...store.rooms])}};
 const mapDispatchToProps = (dispatch, ownProps) =>
    ({
     addRoom: function() {

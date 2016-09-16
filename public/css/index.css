@@ -17,6 +17,10 @@ body {
 	margin: 0;
     color: white;
 }
+input:focus,
+button:focus {
+    outline:0;
+}
 input[type=text] {
     border: none;
     border-bottom: solid 2px #4c4c4f;
@@ -33,6 +37,12 @@ input[type=text] {
     justify-content: center;
     align-items: center;
 }
+.audio-button-true .on,
+.video-button-true .on,
+.fullscreen-button-true .on,
+.audio-button-false .off,
+.video-button-false .off,
+.fullscreen-button-false .off,
 .request-access,
 .grant-access,
 .room-occupied {
@@ -94,11 +104,35 @@ input[type=text] {
 }
 .media-controls {
 	position: relative;
+    display: flex;
+    justify-content: center;
 }
 .audio-button-true,
-.audio-button-false {
-    width: 2.5em;
-    height: 2.5em;
+.audio-button-false,
+.video-button-true,
+.video-button-false,
+.fullscreen-button-true,
+.fullscreen-button-false {
+    width: 3em;
+    height: 3em;
     border-radius: 50%;
     background: rgba(44, 44, 44, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    box-shadow: 2px 2px 24px #444;
+    transition: all .2s ease-out;
+}
+.audio-button-true:hover,
+.audio-button-false:hover,
+.video-button-true:hover,
+.video-button-false:hover,
+.fullscreen-button-true:hover,
+.fullscreen-button-false:hover {
+    box-shadow: 4px 4px 48px #666;
+    background: rgba(64, 124, 247, 1)
+}
+.svg {
+    width: 1.4em;
 }
