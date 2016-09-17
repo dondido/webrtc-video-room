@@ -39,14 +39,41 @@ input[type=text] {
 }
 .audio-button-true .on,
 .video-button-true .on,
-.fullscreen-button-true .on,
-.audio-button-false .off,
 .video-button-false .off,
-.fullscreen-button-false .off,
+.fullscreen-button .on,
 .request-access,
 .grant-access,
 .room-occupied {
 	display: none;
+}
+:-webkit-full-screen .fullscreen-button .on {
+    display: block;
+}
+:-moz-full-screen .fullscreen-button .on {
+    display: block;
+}
+:-ms-fullscreen .fullscreen-button .on {
+    display: block;
+}
+:fullscreen .fullscreen-button .on { /* spec */
+    display: block;
+}
+:-webkit-full-screen .fullscreen-button .off {
+    display: none;
+}
+:-moz-full-screen .fullscreen-button .off {
+    display: none;
+}
+:-ms-fullscreen .fullscreen-button .off {
+    display: none;
+}
+:fullscreen .fullscreen-button .off { /* spec */
+    display: none;
+}
+/* deeper elements */
+:-webkit-full-screen video {
+  width: 100%;
+  height: 100%;
 }
 .join .request-access,
 .approve .grant-access,
@@ -103,16 +130,19 @@ input[type=text] {
     box-shadow: 1px 1px 5px 0 rgba(0,0,0,.5);
 }
 .media-controls {
-	position: relative;
+	position: absolute;
     display: flex;
     justify-content: center;
+    bottom: 2ex;
+    left: 0;
+    right: 0;
 }
+.hangup-button,
 .audio-button-true,
 .audio-button-false,
 .video-button-true,
 .video-button-false,
-.fullscreen-button-true,
-.fullscreen-button-false {
+.fullscreen-button {
     width: 3em;
     height: 3em;
     border-radius: 50%;
@@ -121,16 +151,18 @@ input[type=text] {
     align-items: center;
     justify-content: center;
     border: 0;
-    box-shadow: 2px 2px 24px #444;
+    box-shadow: .2ex .2ex 1.5em #444;
     transition: all .2s ease-out;
+    margin: 0 .4em;
+    cursor: pointer;
 }
+.hangup-button:hover,
 .audio-button-true:hover,
 .audio-button-false:hover,
 .video-button-true:hover,
 .video-button-false:hover,
-.fullscreen-button-true:hover,
-.fullscreen-button-false:hover {
-    box-shadow: 4px 4px 48px #666;
+.fullscreen-button:hover {
+    box-shadow: .4ex .4ex 3em #666;
     background: rgba(64, 124, 247, 1)
 }
 .svg {
