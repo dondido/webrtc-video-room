@@ -177,7 +177,7 @@ class MediaBridge extends React.Component {
 const mapStateToProps = store => ({video: store.video, audio: store.audio});
 const mapDispatchToProps = (dispatch, ownProps) => (
     {
-      setVideo: () => store.dispatch({type: 'SET_VIDEO', video: ownProps.params.video})
+      setVideo: () => store.dispatch({type: 'SET_VIDEO', video: ownProps.params.video}),
       setAudio: () => store.dispatch({type: 'SET_AUDIO', audio: ownProps.params.audio})
     }
   );

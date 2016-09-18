@@ -1,2 +1,3 @@
-export default const setVideo = (state, action) => 
-	action.type === 'SET_AUDIO' ? action.audio : true
+const setVideo = (state, action) => 
+	action.type === 'SET_AUDIO' ? action.audio : true;
+export default setVideo;

@@ -1,6 +1,7 @@
 import React from 'react'
-import { withRouter, Link } from 'react-router'
+import { Link } from 'react-router'
 import { connect } from 'react-redux'
+import store from '../store'
 class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -32,4 +33,5 @@ class Home extends React.Component {
     );
   }
 }
-export default withRouter(Home);
+const mapStateToProps = store => ({rooms: new Set([...store.rooms])});
+export default connect(mapStateToProps)(Home);
