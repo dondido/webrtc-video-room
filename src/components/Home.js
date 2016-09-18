@@ -1,7 +1,6 @@
 import React from 'react'
 import { withRouter, Link } from 'react-router'
 import { connect } from 'react-redux'
-
 class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -19,12 +18,11 @@ class Home extends React.Component {
   }
   handleChange = e => this.setState({value: e.target.value})
   render(){
-    
     return (
       <div className="home">
         <div>
           <p>Please enter a room name.</p>
-          <input type="text" name="room" value={this.state.value} onChange={this.handleChange} />
+          <input type="text" name="room" value={this.state.value} onChange={this.handleChange}  autoFocus />
           <button className="primary-button" type="button" onClick={this.joinRoom}>Join</button>
           <button className="primary-button" type="button" onClick={this.setRoom}>Random</button>
           {this.props.rooms.length !== 0 && <div>Recently used rooms:</div>}
@@ -34,16 +32,4 @@ class Home extends React.Component {
     );
   }
 }
-const mapStateToProps = store => {console.log(114, store); return {
-  rooms: new Set([...store.rooms])}};
-const mapDispatchToProps = (dispatch, ownProps) =>
-   ({
-    addRoom: function() {
-      console.log('ownProps', ownProps)
-      store.dispatch({
-        type: 'ADD_ROOM',
-        room: ownProps.params.room
-      });
-    }
-  });
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Home));
+export default withRouter(Home);

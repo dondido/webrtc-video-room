@@ -15,7 +15,7 @@ button {
 body {
 	background: #333;
 	margin: 0;
-    color: white;
+    color: #eee;
 }
 input:focus,
 button:focus {
@@ -29,7 +29,8 @@ input[type=text] {
     color: #fff;
     padding: .4em 0;
     margin: 2ex 0;
-    width: 20em;
+    width: 100%;
+    max-width: 18em;
     display: block;
 }
 .home {
@@ -41,8 +42,6 @@ input[type=text] {
 .video-button-true .on,
 .video-button-false .off,
 .fullscreen-button .on,
-.request-access,
-.grant-access,
 .room-occupied {
 	display: none;
 }
@@ -75,8 +74,6 @@ input[type=text] {
   width: 100%;
   height: 100%;
 }
-.join .request-access,
-.approve .grant-access,
 .full .room-occupied,
 .recent-room {
 	display: block;
@@ -114,17 +111,50 @@ input[type=text] {
     width: 100%;
 }
 .auth {
-    position: relative;
+    position: absolute;
+    bottom: 10ex;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+.room-occupied,
+.request-access,
+.grant-access {
+    position: absolute;
+    width: 18em;
+    margin: auto;
+    top: 50%;
+    right: 0;
+    left: 0;
+    background: #333;
+    box-sizing: border-box;
+    padding: 0 1em;
+    transition: transform 0.3s cubic-bezier(0.5, -0.5, 0.5, 1.5);
+    transform-origin: center center;
+    transform: scale(0, 0) translateY(-50%);
+    box-shadow: .2ex .2ex 1.5em #444
+}
+.full .room-occupied,
+.join .request-access,
+.approve .grant-access {
+    transform: scale(1, 1) translateY(-50%);
 }
 .primary-button {
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
     background-color: #4285F4;
     border: none;
     color: white;
     font-size: 0.8em;
     margin: 0 5px 20px 5px;
     width: 8em;
-    height: 2.75em;
-    padding: 0.5em 0.7em 0.5em 0.7em;
+    line-height: 4ex;
+    padding: 1ex 0.7em;
+    text-align: center;
     -webkit-box-shadow: 1px 1px 5px 0 rgba(0,0,0,.5);
     -moz-box-shadow: 1px 1px 5px 0 rgba(0,0,0,.5);
     box-shadow: 1px 1px 5px 0 rgba(0,0,0,.5);

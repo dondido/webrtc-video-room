@@ -1,6 +1,6 @@
 import React from 'react'
 import Remarkable from 'remarkable'
-
+import { Link } from 'react-router'
 export default class Auth extends React.Component {
   constructor(props) {
     super(props);
@@ -8,7 +8,6 @@ export default class Auth extends React.Component {
   state = {
     room: 'auth',
     sid: '',
-    userName: '',
     message: ''
   }
   hideAuth() {
@@ -18,10 +17,7 @@ export default class Auth extends React.Component {
   componentDidMount() {
     const socket = this.props.socket;
     let user;
-    socket.on('create', () => {
-      user = 'host';
-      localStorage.setItem('rooms', JSON.stringify({aaa: {user: 'host'}}))
-    });
+    socket.on('create', () => user = 'host');
     socket.on('full', this.full);
     socket.on('bridge', role => this.props.initRemote(role || user));
     socket.on('join', () => {
@@ -30,12 +26,8 @@ export default class Auth extends React.Component {
     });
     socket.on('approve', data => {
       this.setState({room: 'auth approve'});
-      this.setState({userName: data.userName});
       this.setState({message: data.message});
       this.setState({sid: data.sid});
-    });
-    socket.on('log', function(array) {
-      console.log.apply(console, array);
     });
     socket.emit('find');
   }
@@ -57,17 +49,20 @@ export default class Auth extends React.Component {
     return (
       <div className={this.state.room}>
         <form className="request-access">
-          <input type="text" onChange={this.handleInput} data-ref="userName" />
-        	<input type="text" onChange={this.handleInput} data-ref="message" />
-          <button onClick={this.send}>Send</button>
+          <p>Send an invitation to join the room.</p>
+        	<input type="text" autoFocus onChange={this.handleInput} data-ref="message" placeholder="Hi, I'm John Doe." />
+          <button onClick={this.send} className="primary-button">Send</button>
         </form>
         <div className="grant-access">
-          <div dangerouslySetInnerHTML={this.getContent(this.state.userName)}></div>
+          <p>A peer has sent you a message to join the room:</p>
           <div dangerouslySetInnerHTML={this.getContent(this.state.message)}></div>
-          <button onClick={this.handleInvitation} data-ref="reject">Reject</button>
-          <button onClick={this.handleInvitation} data-ref="accept">Accept</button>
+          <button onClick={this.handleInvitation} data-ref="reject" className="primary-button">Reject</button>
+          <button onClick={this.handleInvitation} data-ref="accept" className="primary-button">Accept</button>
         </div>
-        <div className="room-occupied">Please, try another room!</div>
+        <div className="room-occupied">
+          <p>Please, try another room!</p>
+          <Link  className="primary-button" to="/">OK</Link>
+        </div>
       </div>
     );
   }

@@ -1,6 +1,8 @@
 import React from 'react'
 import ToggleFullScreen from './ToggleFullScreen'
-export default class MediaBridge extends React.Component {
+import { connect } from 'react-redux'
+import store from '../store'
+class MediaBridge extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -19,6 +21,8 @@ export default class MediaBridge extends React.Component {
     this.getUserMedia
       .then(stream => {
           this.localStream = stream;
+          this.setState({video: this.props.video});
+          this.setState({audio: this.props.audio});
           this.localStream.getVideoTracks()[0].enabled = this.state.video;
           this.localStream.getAudioTracks()[0].enabled = this.state.audio;
           this.refs.localVideo.src = window.URL.createObjectURL(stream);
@@ -127,8 +131,14 @@ export default class MediaBridge extends React.Component {
       this.getUserMedia.then(attachMediaIfReady);
     }  
   }
-  toggleVideo = () => this.setState({video: this.localStream.getVideoTracks()[0].enabled = !this.state.video})
-  toggleAudio = () => this.setState({audio: this.localStream.getAudioTracks()[0].enabled = !this.state.audio})
+  toggleVideo = () => {
+    this.setState({video: this.localStream.getVideoTracks()[0].enabled = !this.state.video});
+    setVideo();
+  }
+  toggleAudio = () => {
+    this.setState({audio: this.localStream.getAudioTracks()[0].enabled = !this.state.audio});
+    setAudio();
+  }
   handleHangup = () => this.componentWillUnmount()
   render(){
     return (
@@ -164,3 +174,11 @@ export default class MediaBridge extends React.Component {
     );
   }
 }
+const mapStateToProps = store => ({video: store.video, audio: store.audio});
+const mapDispatchToProps = (dispatch, ownProps) => (
+    {
+      setVideo: () => store.dispatch({type: 'SET_VIDEO', video: ownProps.params.video})
+      setAudio: () => store.dispatch({type: 'SET_AUDIO', audio: ownProps.params.audio})
+    }
+  );
+export default connect(mapStateToProps, mapDispatchToProps)(MediaBridge);
