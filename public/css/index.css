@@ -167,6 +167,7 @@ input[type=text] {
     left: 0;
     right: 0;
 }
+.call-exit-button,
 .hangup-button,
 .audio-button-true,
 .audio-button-false,
@@ -186,6 +187,7 @@ input[type=text] {
     margin: 0 .4em;
     cursor: pointer;
 }
+.call-exit-button:hover,
 .hangup-button:hover,
 .audio-button-true:hover,
 .audio-button-false:hover,
