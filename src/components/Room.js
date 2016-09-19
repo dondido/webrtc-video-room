@@ -9,7 +9,7 @@ class Room extends React.Component {
     super(props);
   }
   socket = io.connect()
-  initRemote = user => this.refs.mediaBridge.init(user)
+  initRemote = user => this.refs.mediaBridge.getWrappedInstance().init(user)
   componentDidMount() {
     this.props.addRoom();
   }
@@ -32,4 +32,4 @@ const mapDispatchToProps = (dispatch, ownProps) => (
       addRoom: () => store.dispatch({type: 'ADD_ROOM', room: ownProps.params.room})
     }
   );
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Room));
+export default connect(mapStateToProps, mapDispatchToProps)(Room);
