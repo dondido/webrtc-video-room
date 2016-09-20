@@ -9,37 +9,32 @@ class Auth extends React.Component {
     super(props);
   }
   state = {
-    room: 'auth',
+    room: '',
     sid: '',
     message: '',
     audio: true,
     video: true
   }
   hideAuth() {
-    this.setState({room: 'auth'});
+    this.setState({room: ''});
   } 
-  full = () => this.setState({room: 'auth full'})
+  full = () => this.setState({room: 'full'})
   componentWillMount() {
     this.setState({video: this.props.video});
     this.setState({audio: this.props.audio});
   }
   componentDidMount() {
     const socket = this.props.socket;
-    let user;
-    socket.on('create', () => user = 'host');
+    socket.on('create', () => this.setState({room: 'host'}));
     socket.on('full', this.full);
-    socket.on('bridge', role => this.props.media.init(role || user));
-    socket.on('join', () => {
-      this.setState({room: 'auth join'});
-      user = 'guest';
-    });
+    socket.on('bridge', role => this.props.media.init(role || this.state.room));
+    socket.on('join', () => this.setState({room: 'guest'}));
     socket.on('approve', data => {
-      this.setState({room: 'auth approve'});
+      this.setState({room: 'approve'});
       this.setState({message: data.message});
       this.setState({sid: data.sid});
     });
     socket.emit('find');
-    console.log(111, this.props)
     this.props.getUserMedia
       .then(stream => {
           this.localStream = stream;
@@ -73,22 +68,7 @@ class Auth extends React.Component {
   }
   render(){
     return (
-      <div className={this.state.room}>
-        <form className="request-access">
-          <p>Send an invitation to join the room.</p>
-        	<input type="text" autoFocus onChange={this.handleInput} data-ref="message" placeholder="Hi, I'm John Doe." />
-          <button onClick={this.send} className="primary-button">Send</button>
-        </form>
-        <div className="grant-access">
-          <p>A peer has sent you a message to join the room:</p>
-          <div dangerouslySetInnerHTML={this.getContent(this.state.message)}></div>
-          <button onClick={this.handleInvitation} data-ref="reject" className="primary-button">Reject</button>
-          <button onClick={this.handleInvitation} data-ref="accept" className="primary-button">Accept</button>
-        </div>
-        <div className="room-occupied">
-          <p>Please, try another room!</p>
-          <Link  className="primary-button" to="/">OK</Link>
-        </div>
+      <div className={`auth ${this.state.room}`}>
         <div className="media-controls">
           <Link className="call-exit-button" to="/">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"  className="svg">
@@ -119,7 +99,23 @@ class Auth extends React.Component {
             </svg>
           </button>
         </div>
-        <div>Waiting for someone to join this room:
+        <form className="request-access">
+          <p>Send an invitation to join the room.</p>
+        	<input type="text" autoFocus onChange={this.handleInput} data-ref="message" placeholder="Hi, I'm John Doe." />
+          <button onClick={this.send} className="primary-button">Send</button>
+        </form>
+        <div className="grant-access">
+          <p>A peer has sent you a message to join the room:</p>
+          <div dangerouslySetInnerHTML={this.getContent(this.state.message)}></div>
+          <button onClick={this.handleInvitation} data-ref="reject" className="primary-button">Reject</button>
+          <button onClick={this.handleInvitation} data-ref="accept" className="primary-button">Accept</button>
+        </div>
+        <div className="room-occupied">
+          <p>Please, try another room!</p>
+          <Link  className="primary-button" to="/">OK</Link>
+        </div>
+        <div className="waiting">
+          <p>Waiting for someone to join this room:</p>
           <a href={'href'}>{'href'}</a>
         </div>
       </div>

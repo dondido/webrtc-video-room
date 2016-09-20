@@ -4,7 +4,7 @@ export default class MediaBridge extends React.Component {
     super(props);
   }
   state = {
-    bridge: 'media-bridge'
+    bridge: ''
   }
   componentWillMount() {
     // chrome polyfill for connection between the local device and a remote peer
@@ -28,7 +28,7 @@ export default class MediaBridge extends React.Component {
     this.props.socket.emit('leave');
   }
   onHangup = () => {
-    this.setState({bridge: 'media-bridge'});
+    this.setState({bridge: ''});
   }
   onMessage = message => {
       if (message.type === 'offer') {
@@ -66,7 +66,7 @@ export default class MediaBridge extends React.Component {
           console.log('The Data Channel is Closed');
       };
   }
-  setDescription = offer => this.pc.setLocalDescription(offer)
+  setDescription = offer => {this.pc.setLocalDescription(offer);console.log('offer', offer)}
   // send the offer to a server to be forwarded to the other peer
   sendDescription = () => this.props.socket.send(this.pc.localDescription)
   handleError = e => console.log(e)
@@ -75,6 +75,7 @@ export default class MediaBridge extends React.Component {
     const attachMediaIfReady = () => {
       this.dc = this.pc.createDataChannel('chat');
       this.setupDataHandlers();
+      console.log('attachMediaIfReady')
       this.pc.createOffer()
         .then(this.setDescription)
         .then(this.sendDescription)
@@ -101,7 +102,7 @@ export default class MediaBridge extends React.Component {
         console.log('onaddstream', e) 
         this.remoteStream = e.stream;
         this.refs.remoteVideo.src = window.URL.createObjectURL(this.remoteStream);
-        this.setState({bridge: 'media-bridge established'});
+        this.setState({bridge: 'established'});
     };
     this.pc.ondatachannel = e => {
         // data channel
@@ -118,14 +119,15 @@ export default class MediaBridge extends React.Component {
     this.pc.addStream(this.localStream);
     // call if we were the last to connect (to increase
     // chances that everything is set up properly at both ends)
-    if (role === 'host') {
+  console.log('approve', role, this.props.getUserMedia)
+    if (role === 'approve') {
       this.props.getUserMedia.then(attachMediaIfReady);
     }  
   }
   handleHangup = () => this.componentWillUnmount()
   render(){
     return (
-      <div className={this.state.bridge}>
+      <div className={`media-bridge ${this.state.bridge}`}>
         <video className="remote-video" ref="remoteVideo" autoPlay></video>
         <video className="local-video" ref="localVideo" autoPlay muted></video>
       </div>

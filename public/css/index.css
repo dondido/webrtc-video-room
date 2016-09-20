@@ -120,23 +120,6 @@ input[type=text] {
     align-items: center;
     justify-content: center
 }
-.room-occupied,
-.request-access,
-.grant-access {
-    width: 18em;
-    background: #333;
-    box-sizing: border-box;
-    padding: 0 1em;
-    transition: transform 0.3s cubic-bezier(0.5, -0.5, 0.5, 1.5);
-    transform-origin: center center;
-    transform: scale(0, 0);
-    box-shadow: .2ex .2ex 1.5em #444
-}
-.full .room-occupied,
-.join .request-access,
-.approve .grant-access {
-    transform: scale(1, 1);
-}
 .primary-button {
     text-decoration: none;
     display: inline-block;
@@ -156,6 +139,7 @@ input[type=text] {
 }
 .media-controls {
     display: flex;
+    margin: 2ex 0;
     justify-content: center;
     left: 0;
     right: 0;
@@ -192,4 +176,24 @@ input[type=text] {
 }
 .svg {
     width: 1.4em;
+}
+.room-occupied,
+.request-access,
+.grant-access,
+.waiting {
+    overflow: hidden;
+    padding: 0 1em;
+    box-sizing: border-box;
+    width: 100%;
+    background: rgba(0, 0, 0, .8);
+    /* Initially we don't want any height, and we want the contents to be hidden */
+    max-height: 0;
+    transition: max-height .2s;
+}
+.full .room-occupied,
+.guest .request-access,
+.approve .grant-access,
+.host .waiting {
+    /* Set the max-height to something large. In this case there's an obvious limit. */
+    max-height: 20ex;
 }
