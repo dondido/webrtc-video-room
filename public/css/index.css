@@ -112,35 +112,30 @@ input[type=text] {
 }
 .auth {
     position: absolute;
-    bottom: 10ex;
-    top: 0;
+    bottom: 0;
     left: 0;
     right: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center
 }
 .room-occupied,
 .request-access,
 .grant-access {
-    position: absolute;
     width: 18em;
-    margin: auto;
-    top: 50%;
-    right: 0;
-    left: 0;
     background: #333;
     box-sizing: border-box;
     padding: 0 1em;
     transition: transform 0.3s cubic-bezier(0.5, -0.5, 0.5, 1.5);
     transform-origin: center center;
-    transform: scale(0, 0) translateY(-50%);
+    transform: scale(0, 0);
     box-shadow: .2ex .2ex 1.5em #444
 }
 .full .room-occupied,
 .join .request-access,
 .approve .grant-access {
-    transform: scale(1, 1) translateY(-50%);
+    transform: scale(1, 1);
 }
 .primary-button {
     text-decoration: none;
@@ -160,10 +155,8 @@ input[type=text] {
     box-shadow: 1px 1px 5px 0 rgba(0,0,0,.5);
 }
 .media-controls {
-	position: absolute;
     display: flex;
     justify-content: center;
-    bottom: 2ex;
     left: 0;
     right: 0;
 }
