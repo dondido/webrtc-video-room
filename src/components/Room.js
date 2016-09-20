@@ -7,20 +7,20 @@ class Room extends React.Component {
   constructor(props) {
     super(props);
   }
+  getUserMedia = navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: true
+  }).catch(e => alert('getUserMedia() error: ' + e.name))
   socket = io.connect()
-  initRemote = user => this.media.init(user)
-  componentDidMount() {
+  componentWillMount() {
     this.props.addRoom();
   }
   render(){
   	const href = window.location.href;
     return (
       <div>
-        <MediaBridge media={media => this.media = media} socket={this.socket} />
-        <Auth socket={this.socket} initRemote={this.initRemote} className="auth" />
-        <div>Waiting for someone to join this room:
-        	<a href={href}>{href}</a>
-        </div>
+        <MediaBridge media={media => this.media = media} socket={this.socket} getUserMedia={this.getUserMedia} />
+        <Auth socket={this.socket} media={this.media} getUserMedia={this.getUserMedia} className="auth" />
       </div>
     );
   }
