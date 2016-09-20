@@ -16,9 +16,12 @@ class MediaBridge extends React.Component {
     audio: true,
     video: true
   }).catch(e => alert('getUserMedia() error: ' + e.name))
-  componentDidMount() {
+  componentWillMount() {
     // chrome polyfill for connection between the local device and a remote peer
     window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
+    this.props.media(this);
+  }
+  componentDidMount() {
     this.setState({video: this.props.video});
     this.setState({audio: this.props.audio});
     this.getUserMedia
@@ -32,6 +35,7 @@ class MediaBridge extends React.Component {
     this.props.socket.on('hangup', this.onHangup);
   }
   componentWillUnmount() {
+    this.props.media(null);
     if(this.localStream !== undefined) {
       this.localStream.getVideoTracks()[0].stop();
     }

@@ -1,5 +1,4 @@
 import React from 'react'
-import { withRouter } from 'react-router'
 import MediaBridge from './MediaBridge'
 import Auth from './Auth'
 import { connect } from 'react-redux'
@@ -9,7 +8,7 @@ class Room extends React.Component {
     super(props);
   }
   socket = io.connect()
-  initRemote = user => this.refs.mediaBridge.getWrappedInstance().init(user)
+  initRemote = user => this.media.init(user)
   componentDidMount() {
     this.props.addRoom();
   }
@@ -17,7 +16,7 @@ class Room extends React.Component {
   	const href = window.location.href;
     return (
       <div>
-        <MediaBridge ref="mediaBridge" socket={this.socket} />
+        <MediaBridge media={media => this.media = media} socket={this.socket} />
         <Auth socket={this.socket} initRemote={this.initRemote} className="auth" />
         <div>Waiting for someone to join this room:
         	<a href={href}>{href}</a>
