@@ -1,9 +1,9 @@
 import React from 'react'
-import MediaBridge from './MediaBridge'
-import Auth from './Auth'
+import MediaContainer from './MediaContainer'
+import CommunicationContainer from './CommunicationContainer'
 import { connect } from 'react-redux'
 import store from '../store'
-class Room extends React.Component {
+class RoomPage extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -19,8 +19,8 @@ class Room extends React.Component {
   	const href = window.location.href;
     return (
       <div>
-        <MediaBridge media={media => this.media = media} socket={this.socket} getUserMedia={this.getUserMedia} />
-        <Auth socket={this.socket} media={this.media} getUserMedia={this.getUserMedia} className="auth" />
+        <MediaContainer media={media => this.media = media} socket={this.socket} getUserMedia={this.getUserMedia} />
+        <CommunicationContainer socket={this.socket} media={this.media} getUserMedia={this.getUserMedia} />
       </div>
     );
   }
@@ -31,4 +31,4 @@ const mapDispatchToProps = (dispatch, ownProps) => (
       addRoom: () => store.dispatch({type: 'ADD_ROOM', room: ownProps.params.room})
     }
   );
-export default connect(mapStateToProps, mapDispatchToProps)(Room);
+export default connect(mapStateToProps, mapDispatchToProps)(RoomPage);

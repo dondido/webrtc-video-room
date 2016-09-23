@@ -1,37 +1,21 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { connect } from 'react-redux'
-import store from '../store'
-class Home extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  state = {
-    value: new Date() - new Date().setHours(0, 0, 0, 0)
-  }
-  static contextTypes = {
-    router: React.PropTypes.object
-  }
-  setRoom = () => this.setState({value: new Date() - new Date().setHours(0, 0, 0, 0)})
-  joinRoom = (e) => {
-    e.preventDefault();
-    this.context.router.push('r/' + this.state.value);
-  }
-  handleChange = e => this.setState({value: e.target.value})
-  render(){
-    return (
-      <div className="home">
-        <div>
-          <p>Please enter a room name.</p>
-          <input type="text" name="room" value={this.state.value} onChange={this.handleChange}  autoFocus />
-          <button className="primary-button" type="button" onClick={this.joinRoom}>Join</button>
-          <button className="primary-button" type="button" onClick={this.setRoom}>Random</button>
-          {this.props.rooms.length !== 0 && <div>Recently used rooms:</div>}
-          {[...this.props.rooms].map(room => <Link key={room} className="recent-room" to={'/r/' + room}>{room}</Link>)}
-        </div>
-      </div>
-    );
-  }
+const Home = props =>
+  <div className="home">
+    <div>
+      <p>Please enter a room name.</p>
+      <input type="text" name="room" value={props.roomId} onChange={props.handleChange}  autoFocus />
+      <button className="primary-button" type="button" onClick={props.joinRoom}>Join</button>
+      <button className="primary-button" type="button" onClick={props.setRoom}>Random</button>
+      {props.rooms.length !== 0 && <div>Recently used rooms:</div>}
+      {[...props.rooms].map(room => <Link key={room} className="recent-room" to={'/r/' + room}>{room}</Link>)}
+    </div>
+  </div>;
+Home.propTypes = {
+  roomId: React.PropTypes.number.isRequired,
+  handleChange: React.PropTypes.func.isRequired,
+  joinRoom: React.PropTypes.func.isRequired,
+  setRoom: React.PropTypes.func.isRequired,
+  rooms: React.PropTypes.object.isRequired,
 }
-const mapStateToProps = store => ({rooms: new Set([...store.rooms])});
-export default connect(mapStateToProps)(Home);
+export default Home;

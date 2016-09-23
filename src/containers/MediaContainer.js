@@ -120,7 +120,7 @@ export default class MediaBridge extends React.Component {
     // call if we were the last to connect (to increase
     // chances that everything is set up properly at both ends)
   console.log('approve', role, this.props.getUserMedia)
-    if (role === 'approve') {
+    if (role === 'host') {
       this.props.getUserMedia.then(attachMediaIfReady);
     }  
   }
