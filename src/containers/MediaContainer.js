@@ -27,8 +27,14 @@ export default class MediaBridge extends React.Component {
     }
     this.props.socket.emit('leave');
   }
+  hangup() {
+    console.log(1111)
+    this.pc.close();
+    this.props.socket.emit('leave');
+  }
   onHangup = () => {
-    this.setState({bridge: ''});
+    console.log(1112);
+    this.setState({bridge: 'hangup'});
   }
   onMessage = message => {
       if (message.type === 'offer') {
@@ -62,8 +68,9 @@ export default class MediaBridge extends React.Component {
           console.log('received message over data channel:' + msg);
       };
       this.dc.onclose = () => {
-          this.remoteStream.getVideoTracks()[0].stop();
-          console.log('The Data Channel is Closed');
+        this.onHangup()
+        this.remoteStream.getVideoTracks()[0].stop();
+        console.log('The Data Channel is Closed');
       };
   }
   setDescription = offer => {this.pc.setLocalDescription(offer);console.log('offer', offer)}
@@ -124,7 +131,6 @@ export default class MediaBridge extends React.Component {
       this.props.getUserMedia.then(attachMediaIfReady);
     }  
   }
-  handleHangup = () => this.componentWillUnmount()
   render(){
     return (
       <div className={`media-bridge ${this.state.bridge}`}>

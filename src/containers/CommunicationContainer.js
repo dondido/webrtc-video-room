@@ -76,6 +76,7 @@ class CommunicationContainer extends React.Component {
     this.setState({audio: audio});
     this.props.setAudio(audio);
   }
+  handleHangup = () => this.props.media.hangup()
   render(){
     return (
       <Communication
@@ -84,6 +85,7 @@ class CommunicationContainer extends React.Component {
         toggleAudio={this.toggleAudio}
         getContent={this.getContent}
         send={this.send}
+        handleHangup={this.handleHangup}
         handleInput={this.handleInput}
         handleInvitation={this.handleInvitation} />
     );

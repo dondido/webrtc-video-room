@@ -38,6 +38,7 @@ input[type=text] {
     justify-content: center;
     align-items: center;
 }
+.remote-left,
 .audio-button-true .on,
 .video-button-true .on,
 .video-button-false .off,
@@ -75,6 +76,7 @@ input[type=text] {
   height: 100%;
 }
 .full .room-occupied,
+.hangup + .auth .remote-left,
 .recent-room {
 	display: block;
 }
@@ -179,6 +181,7 @@ input[type=text] {
 }
 .room-occupied,
 .request-access,
+.established + .auth .waiting,
 .grant-access,
 .waiting {
     overflow: hidden;
@@ -195,5 +198,5 @@ input[type=text] {
 .approve .grant-access,
 .host .waiting {
     /* Set the max-height to something large. In this case there's an obvious limit. */
-    max-height: 20ex;
+    max-height: 10ex;
 }

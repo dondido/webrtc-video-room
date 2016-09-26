@@ -49,7 +49,8 @@ const Communication = props =>
       <Link  className="primary-button" to="/">OK</Link>
     </div>
     <div className="waiting">
-      <p>Waiting for someone to join this room: <a href={window.location.href}>{window.location.href}</a></p>
+      <p><span>Waiting for someone to join this room:</span><a href={window.location.href}>{window.location.href}</a><br/>
+      <span className="remote-left">The remote side hung up.</span></p>
     </div>
   </div>
 Communication.propTypes = {
@@ -61,6 +62,7 @@ Communication.propTypes = {
   toggleAudio: React.PropTypes.func.isRequired,
   getContent: React.PropTypes.func.isRequired,
   send: React.PropTypes.func.isRequired,
+  handleHangup: React.PropTypes.func.isRequired,
   handleInput: React.PropTypes.func.isRequired,
   handleInvitation: React.PropTypes.func.isRequired
 };
