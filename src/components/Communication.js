@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router'
 import ToggleFullScreen from './ToggleFullScreen'
 const Communication = props =>
-  <div className={`auth ${props.room}`}>
+  <div className="auth">
     <div className="media-controls">
       <Link className="call-exit-button" to="/">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"  className="svg">
@@ -55,7 +55,6 @@ const Communication = props =>
   </div>
 Communication.propTypes = {
   message: React.PropTypes.string.isRequired,
-  room: React.PropTypes.string.isRequired,
   audio: React.PropTypes.bool.isRequired,
   video: React.PropTypes.bool.isRequired,
   toggleVideo: React.PropTypes.func.isRequired,

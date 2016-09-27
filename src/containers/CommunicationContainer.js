@@ -18,29 +18,27 @@ class CommunicationContainer extends React.Component {
     media: React.PropTypes.instanceOf(MediaContainer)
   }
   state = {
-    room: '',
     sid: '',
     message: '',
     audio: true,
     video: true
   }
   hideAuth() {
-    this.setState({room: ''});
+    this.props.media.setState({bridge: 'connecting'});
   } 
-  full = () => this.setState({room: 'full'})
+  full = () => this.props.media.setState({bridge: 'full'})
   componentWillMount() {
     this.setState({video: this.props.video});
     this.setState({audio: this.props.audio});
   }
   componentDidMount() {
     const socket = this.props.socket;
-    let user = 'guest';
-    socket.on('create', () => this.setState({room: user = 'host'}));
+    socket.on('create', () => this.props.media.setState({user: 'host'}));
     socket.on('full', this.full);
-    socket.on('bridge', role => this.props.media.init(role || user));
-    socket.on('join', () => this.setState({room: 'guest'}));
+    socket.on('bridge', role => this.props.media.init());
+    socket.on('join', () => this.props.media.setState({user: 'guest'}));
     socket.on('approve', data => {
-      this.setState({room: 'approve'});
+      this.props.media.setState({bridge: 'approve'});
       this.setState({message: data.message});
       this.setState({sid: data.sid});
     });

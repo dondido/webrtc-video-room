@@ -181,7 +181,8 @@ input[type=text] {
 }
 .room-occupied,
 .request-access,
-.established + .auth .waiting,
+.waiting,
+.request-access,
 .grant-access,
 .waiting {
     overflow: hidden;
@@ -191,12 +192,16 @@ input[type=text] {
     background: rgba(0, 0, 0, .8);
     /* Initially we don't want any height, and we want the contents to be hidden */
     max-height: 0;
-    transition: max-height .2s;
+    transition: max-height .3s ease;
 }
-.full .room-occupied,
-.guest .request-access,
-.approve .grant-access,
-.host .waiting {
+.full + .auth .room-occupied,
+.guest:not(.connecting):not(.established) + .auth .request-access,
+.approve + .auth .grant-access {
+    transition-delay: .3s;
     /* Set the max-height to something large. In this case there's an obvious limit. */
-    max-height: 10ex;
+    max-height: 16ex;
+}
+.host:not(.connecting):not(.approve):not(.established) + .auth .waiting {
+    /* Set the max-height to something large. In this case there's an obvious limit. */
+    max-height: 16ex;
 }
