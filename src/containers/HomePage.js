@@ -13,7 +13,8 @@ class HomePage extends React.Component {
     router: React.PropTypes.object
   }
   setRoom = () => this.setState({value: new Date() - new Date().setHours(0, 0, 0, 0)})
-  joinRoom = (e) => {
+  joinRoom = e => {
+    console.log(11111)
     e.preventDefault();
     this.context.router.push('r/' + this.state.value);
   }
