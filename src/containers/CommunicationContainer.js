@@ -33,10 +33,12 @@ class CommunicationContainer extends React.Component {
   }
   componentDidMount() {
     const socket = this.props.socket;
-    socket.on('create', () => this.props.media.setState({user: 'host'}));
+    socket.on('create', () =>
+      this.props.media.setState({user: 'host', bridge: 'create'}));
     socket.on('full', this.full);
     socket.on('bridge', role => this.props.media.init());
-    socket.on('join', () => this.props.media.setState({user: 'guest'}));
+    socket.on('join', () =>
+      this.props.media.setState({user: 'guest', bridge: 'join'}));
     socket.on('approve', data => {
       this.props.media.setState({bridge: 'approve'});
       this.setState({message: data.message});

@@ -34,7 +34,7 @@ const Communication = props =>
       </button>
     </div>
     <form className="request-access">
-      <p>Send an invitation to join the room.</p>
+      <p><span className="you-left">You hung up.&nbsp;</span>Send an invitation to join the room.</p>
     	<input type="text" autoFocus onChange={props.handleInput} data-ref="message" placeholder="Hi, I'm John Doe." />
       <button onClick={props.send} className="primary-button">Send</button>
     </form>
@@ -49,7 +49,7 @@ const Communication = props =>
       <Link  className="primary-button" to="/">OK</Link>
     </div>
     <div className="waiting">
-      <p><span>Waiting for someone to join this room:</span><a href={window.location.href}>{window.location.href}</a><br/>
+      <p><span>Waiting for someone to join this room:&nbsp;</span><a href={window.location.href}>{window.location.href}</a><br/>
       <span className="remote-left">The remote side hung up.</span></p>
     </div>
   </div>

@@ -30,23 +30,13 @@ export default class MediaBridge extends React.Component {
   }
   hangup() {
     console.log(1111);
-    this.setState(
-      {
-        user: 'guest',
-        bridge: 'hangup'
-      }
-    );
+    this.setState({user: 'guest', bridge: 'guest-hangup'});
     this.pc.close();
     this.props.socket.emit('leave');
   }
   onRemoteHangup = () => {
     console.log(1112);
-    this.setState(
-      {
-        user: 'host',
-        bridge: 'hangup'
-      }
-    );
+    this.setState({user: 'host', bridge: 'host-hangup'});
   }
   onMessage = message => {
       if (message.type === 'offer') {
@@ -144,7 +134,7 @@ export default class MediaBridge extends React.Component {
   }
   render(){
     return (
-      <div className={`media-bridge ${this.state.bridge} ${this.state.user}`}>
+      <div className={`media-bridge ${this.state.bridge}`}>
         <video className="remote-video" ref="remoteVideo" autoPlay></video>
         <video className="local-video" ref="localVideo" autoPlay muted></video>
       </div>

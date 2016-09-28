@@ -38,7 +38,39 @@ input[type=text] {
     justify-content: center;
     align-items: center;
 }
+.call-exit-button,
+.hangup-button,
+.audio-button-true,
+.audio-button-false,
+.video-button-true,
+.video-button-false,
+.fullscreen-button {
+    width: 3em;
+    height: 3em;
+    border-radius: 50%;
+    background: rgba(44, 44, 44, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    box-shadow: .2ex .2ex 1.5em #444;
+    transition: all .2s ease-out;
+    margin: 0 .4em;
+    cursor: pointer;
+}
+.call-exit-button:hover,
+.hangup-button:hover,
+.audio-button-true:hover,
+.audio-button-false:hover,
+.video-button-true:hover,
+.video-button-false:hover,
+.fullscreen-button:hover {
+    box-shadow: .4ex .4ex 3em #666;
+    background: rgba(64, 124, 247, 1)
+}
+.you-left,
 .remote-left,
+.hangup-button,
 .audio-button-true .on,
 .video-button-true .on,
 .video-button-false .off,
@@ -75,8 +107,11 @@ input[type=text] {
   width: 100%;
   height: 100%;
 }
+.guest-hangup + .auth .you-left {
+    display: inline;
+}
 .full .room-occupied,
-.hangup + .auth .remote-left,
+.host-hangup + .auth .remote-left,
 .recent-room {
 	display: block;
 }
@@ -94,16 +129,14 @@ input[type=text] {
     max-height: 100%;
     max-width: 100%;
     object-fit: cover;
-    left: 0;
-    bottom: 0;
     transition: all .3s;
 }
 .established .local-video {
-	border: 1px solid gray;
-    bottom: 20px;
-    left: 20px;
+	margin: 10px;
     max-height: 17%;
-    max-width: 17%; 
+    max-width: 17%;
+    height: auto;
+    width: auto;
 }
 .media-bridge,
 .local-video,
@@ -146,36 +179,6 @@ input[type=text] {
     left: 0;
     right: 0;
 }
-.call-exit-button,
-.hangup-button,
-.audio-button-true,
-.audio-button-false,
-.video-button-true,
-.video-button-false,
-.fullscreen-button {
-    width: 3em;
-    height: 3em;
-    border-radius: 50%;
-    background: rgba(44, 44, 44, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 0;
-    box-shadow: .2ex .2ex 1.5em #444;
-    transition: all .2s ease-out;
-    margin: 0 .4em;
-    cursor: pointer;
-}
-.call-exit-button:hover,
-.hangup-button:hover,
-.audio-button-true:hover,
-.audio-button-false:hover,
-.video-button-true:hover,
-.video-button-false:hover,
-.fullscreen-button:hover {
-    box-shadow: .4ex .4ex 3em #666;
-    background: rgba(64, 124, 247, 1)
-}
 .svg {
     width: 1.4em;
 }
@@ -195,13 +198,18 @@ input[type=text] {
     transition: max-height .3s ease;
 }
 .full + .auth .room-occupied,
-.guest:not(.connecting):not(.established) + .auth .request-access,
+.guest-hangup + .auth .request-access,
+.join + .auth .request-access,
 .approve + .auth .grant-access {
     transition-delay: .3s;
     /* Set the max-height to something large. In this case there's an obvious limit. */
-    max-height: 16ex;
+    max-height: 20ex;
 }
-.host:not(.connecting):not(.approve):not(.established) + .auth .waiting {
+.host-hangup + .auth .waiting,
+.create + .auth .waiting {
     /* Set the max-height to something large. In this case there's an obvious limit. */
-    max-height: 16ex;
+    max-height: 20ex;
+}
+.established + .auth .hangup-button {
+    display: flex;
 }
