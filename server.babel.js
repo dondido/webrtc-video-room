@@ -2,6 +2,8 @@ import express from 'express';
 import fs from 'fs';
 import https from 'https';
 import sio from 'socket.io';
+import favicon from 'serve-favicon';
+import compression from 'compression';
 const app = express(),
   options = { 
   	key: fs.readFileSync(__dirname + '/remoteavatar-key.pem'),
@@ -9,8 +11,13 @@ const app = express(),
   },
   server = https.createServer(options, app).listen(process.env.PORT || 3000),
   io = sio(server);
+// compress all requests
+app.use(compression());
 app.use(express.static('public'));
 app.use((req, res) => res.sendFile(__dirname + '/public/index.html'));
+app.use(favicon('./public/favicon.ico'));
+// Switch off the default 'X-Powered-By: Express' header
+app.disable('x-powered-by');
 io.sockets.on('connection', socket => {
   let room = '';
   const create = err => {
@@ -44,7 +51,6 @@ io.sockets.on('connection', socket => {
   });
   socket.on('accept', id => {
     io.sockets.connected[id].join(room);
-    console.log('io.sockets.connected[id]', room, 111)
     // sending to all clients in 'game' room(channel), include sender
     io.in(room).emit('bridge');
   });
@@ -52,6 +58,5 @@ io.sockets.on('connection', socket => {
   socket.on('leave', () => {
     // sending to all clients in the room (channel) except sender
     socket.broadcast.to(room).emit('hangup');
-    console.log(119, 'disconnect', room);
     socket.leave(room);});
 });

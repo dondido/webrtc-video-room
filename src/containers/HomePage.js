@@ -14,7 +14,6 @@ class HomePage extends React.Component {
   }
   setRoom = () => this.setState({value: new Date() - new Date().setHours(0, 0, 0, 0)})
   joinRoom = e => {
-    console.log(11111)
     e.preventDefault();
     this.context.router.push('r/' + this.state.value);
   }

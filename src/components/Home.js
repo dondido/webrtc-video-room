@@ -6,7 +6,7 @@ const Home = props =>
       <h1 itemProp="headline">Webrtc Video Room</h1>
       <p>Please enter a room name.</p>
       <form onSubmit={props.joinRoom}>
-        <input type="text" name="room" value={props.roomId} onChange={props.handleChange} pattern="[A-Za-z0-9_]" required autoFocus />
+        <input type="text" name="room" value={props.roomId} onChange={props.handleChange} pattern="[a-z0-9_]" required autoFocus title="Room name should only contain lowercase letters or numbers."/>
         <button className="primary-button" type="submit">Join</button>
         <button className="primary-button" onClick={props.setRoom}>Random</button>
       </form>
