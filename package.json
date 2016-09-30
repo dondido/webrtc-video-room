@@ -1,17 +1,11 @@
 {
-  "name": "remote-avatar",
+  "name": "webrtc-video-room",
   "version": "1.0.0",
-  "description": "",
+  "description": "WebRTC Video Room is a Single-Page App in React using React Router that provides peer-to-peer video and audio communication in a web browser with no plugins or extensions required.",
   "main": "index.js",
-  "scripts": {
-    "webpack-watch": "webpack -w",
-    "express-server": "node ./server",
-    "dev": "concurrent --kill-others \"npm run webpack-watch\" \"npm run express-server\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
-    "url": "https://bitbucket.org/didosaurus/remote-avatar"
+    "url": "https://github.com/dondido/webrtc-video-room.git"
   },
   "author": "Dian Dimitrov",
   "license": "MIT",
