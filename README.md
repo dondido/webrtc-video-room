@@ -1,4 +1,4 @@
-# ES6 Single Page App
+# WebRTC video chat app with ReactJS
 ## Synopsis
 WebRTC audio/video conferencing app with user authentication using ReactJS.
 ## Motivation
