@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'path';
 import fs from 'fs';
 import http from 'http';
 import https from 'https';
@@ -18,8 +19,8 @@ const app = express(),
   io = sio(server);
 // compress all requests
 app.use(compression());
-app.use(express.static(__dirname + '/public'));
-app.get('*', (req, res) => res.sendFile(__dirname + '/public/index.html'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use((req, res) => res.sendFile(__dirname + '/public/index.html'));
 app.use(favicon('./public/favicon.ico'));
 // Switch off the default 'X-Powered-By: Express' header
 app.disable('x-powered-by');
