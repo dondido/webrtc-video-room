@@ -10,7 +10,7 @@
    "scripts": {
     "start": "node server.js",
     "prod": "NODE_ENV=production node server.js",
-    "postinstall": "webpack -p"
+    "postinstall": "webpack -p --config ./webpack.config.js --progress"
   },
   "author": "Dian Dimitrov",
   "license": "MIT",
