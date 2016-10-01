@@ -8,7 +8,9 @@
     "url": "https://github.com/dondido/webrtc-video-room.git"
   },
    "scripts": {
-    "start": "node ./server"
+    "start": "node server.js",
+    "prod": "NODE_ENV=production node server.js",
+    "postinstall": "webpack -p"
   },
   "author": "Dian Dimitrov",
   "license": "MIT",
