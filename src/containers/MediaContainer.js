@@ -1,7 +1,10 @@
 import React from 'react'
+
 export default class MediaBridge extends React.Component {
-  constructor(props) {
-    super(props);
+  static propTypes = {
+    socket: React.PropTypes.object.isRequired,
+    getUserMedia: React.PropTypes.object.isRequired,
+    media: React.PropTypes.func.isRequired
   }
   state = {
     bridge: '',
@@ -16,28 +19,19 @@ export default class MediaBridge extends React.Component {
     this.props.getUserMedia
       .then(stream => {
           this.localStream = stream;
-          this.refs.localVideo.src = window.URL.createObjectURL(stream);
+          this.localVideo.src = window.URL.createObjectURL(stream);
         });
     this.props.socket.on('message', this.onMessage);
     this.props.socket.on('hangup', this.onRemoteHangup);
   }
   componentWillUnmount() {
     this.props.media(null);
-    if(this.localStream !== undefined) {
+    if (this.localStream !== undefined) {
       this.localStream.getVideoTracks()[0].stop();
     }
     this.props.socket.emit('leave');
   }
-  hangup() {
-    console.log(1111);
-    this.setState({user: 'guest', bridge: 'guest-hangup'});
-    this.pc.close();
-    this.props.socket.emit('leave');
-  }
-  onRemoteHangup = () => {
-    console.log(1112);
-    this.setState({user: 'host', bridge: 'host-hangup'});
-  }
+  onRemoteHangup = () => this.setState({user: 'host', bridge: 'host-hangup'})
   onMessage = message => {
       if (message.type === 'offer') {
           // set remote description and answer
@@ -74,9 +68,14 @@ export default class MediaBridge extends React.Component {
         console.log('The Data Channel is Closed');
       };
   }
-  setDescription = offer => {this.pc.setLocalDescription(offer);console.log('offer', offer)}
+  setDescription = offer => this.pc.setLocalDescription(offer)
   // send the offer to a server to be forwarded to the other peer
   sendDescription = () => this.props.socket.send(this.pc.localDescription)
+  hangup() {
+    this.setState({user: 'guest', bridge: 'guest-hangup'});
+    this.pc.close();
+    this.props.socket.emit('leave');
+  }
   handleError = e => console.log(e)
   init() {
     // wait for local media to be ready
@@ -109,7 +108,7 @@ export default class MediaBridge extends React.Component {
     this.pc.onaddstream = e => {
         console.log('onaddstream', e) 
         this.remoteStream = e.stream;
-        this.refs.remoteVideo.src = window.URL.createObjectURL(this.remoteStream);
+        this.remoteVideo.src = window.URL.createObjectURL(this.remoteStream);
         this.setState({bridge: 'established'});
     };
     this.pc.ondatachannel = e => {
@@ -127,7 +126,6 @@ export default class MediaBridge extends React.Component {
     this.pc.addStream(this.localStream);
     // call if we were the last to connect (to increase
     // chances that everything is set up properly at both ends)
-  console.log('approve', this.state.user)
     if (this.state.user === 'host') {
       this.props.getUserMedia.then(attachMediaIfReady);
     }  
@@ -135,8 +133,8 @@ export default class MediaBridge extends React.Component {
   render(){
     return (
       <div className={`media-bridge ${this.state.bridge}`}>
-        <video className="remote-video" ref="remoteVideo" autoPlay></video>
-        <video className="local-video" ref="localVideo" autoPlay muted></video>
+        <video className="remote-video" ref={(ref) => this.remoteVideo = ref} autoPlay></video>
+        <video className="local-video" ref={(ref) => this.localVideo = ref} autoPlay muted></video>
       </div>
     );
   }

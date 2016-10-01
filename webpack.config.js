@@ -1,4 +1,5 @@
 // webpack should be in the node_modules directory, install if not.
+// https://medium.com/@tkssharma/eslint-in-react-babel-webpack-9cb1c4e86f4e#.hlophrwed
 var webpack = require("webpack");
 module.exports = {
   devtool: 'cheap-module-source-map',
@@ -12,7 +13,7 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel-loader'
+        loaders: ['babel-loader', 'eslint-loader']
       }
     ]
   },

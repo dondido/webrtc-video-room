@@ -4,10 +4,12 @@ import https from 'https';
 import sio from 'socket.io';
 import favicon from 'serve-favicon';
 import compression from 'compression';
+
 const app = express(),
-  options = { 
-  	key: fs.readFileSync(__dirname + '/remoteavatar-key.pem'),
-  	cert: fs.readFileSync(__dirname + '/remoteavatar-cert.pem')
+  options = process.env.NODE_ENV === 'production' ? {} :
+  { 
+  	key: fs.readFileSync(__dirname + '/rtc-video-room-key.pem'),
+  	cert: fs.readFileSync(__dirname + '/rtc-video-room-cert.pem')
   },
   server = https.createServer(options, app).listen(process.env.PORT || 3000),
   io = sio(server);

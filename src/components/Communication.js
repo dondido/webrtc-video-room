@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router'
 import ToggleFullScreen from './ToggleFullScreen'
+
 const Communication = props =>
   <div className="auth">
     <div className="media-controls">
@@ -36,7 +37,7 @@ const Communication = props =>
     <form className="request-access">
       <p><span className="you-left">You hung up.&nbsp;</span>Send an invitation to join the room.</p>
       <form onSubmit={props.send}>
-      	<input type="text" autoFocus onChange={props.handleInput} data-ref="message" required placeholder="Hi, I'm John Doe." />
+        <input type="text" autoFocus onChange={props.handleInput} data-ref="message"  maxLength="30" required placeholder="Hi, I'm John Doe." />
         <button type="submit" className="primary-button">Send</button>
       </form>
     </form>
@@ -55,6 +56,7 @@ const Communication = props =>
       <span className="remote-left">The remote side hung up.</span></p>
     </div>
   </div>
+
 Communication.propTypes = {
   message: React.PropTypes.string.isRequired,
   audio: React.PropTypes.bool.isRequired,
@@ -67,4 +69,5 @@ Communication.propTypes = {
   handleInput: React.PropTypes.func.isRequired,
   handleInvitation: React.PropTypes.func.isRequired
 };
+
 export default Communication;
