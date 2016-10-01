@@ -14,8 +14,13 @@ Once you have forked this project, go ahead and use npm through the command line
 npm install
 npm install webpack -global
 webpack --progress -p
+npm start
 ```
 
+## Demo
+
+Demo of the app can be found on Heroku:
+https://webrtc-video-room.herokuapp.com/
 
 ### License
 
