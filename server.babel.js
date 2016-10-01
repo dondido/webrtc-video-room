@@ -19,7 +19,7 @@ const app = express(),
 // compress all requests
 app.use(compression());
 app.use(express.static(__dirname + '/public'));
-app.use((req, res) => res.sendFile(__dirname + '/public/index.html'));
+app.get('*', (req, res) => res.sendFile(__dirname + '/public/index.html'));
 app.use(favicon('./public/favicon.ico'));
 // Switch off the default 'X-Powered-By: Express' header
 app.disable('x-powered-by');
