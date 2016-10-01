@@ -5,7 +5,7 @@ module.exports = {
   devtool: 'cheap-module-source-map',
   entry: './src/index.js',
   output: {
-    path: './public',
+    path: './public/js',
     filename: 'bundle.js'
   },
   module: {
