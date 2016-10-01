@@ -1,17 +1,20 @@
 import express from 'express';
 import fs from 'fs';
+import http from 'http';
 import https from 'https';
 import sio from 'socket.io';
 import favicon from 'serve-favicon';
 import compression from 'compression';
 
 const app = express(),
-  options = process.env.NODE_ENV === 'production' ? {} :
-  { 
-  	key: fs.readFileSync(__dirname + '/rtc-video-room-key.pem'),
-  	cert: fs.readFileSync(__dirname + '/rtc-video-room-cert.pem')
+  options = { 
+    key: fs.readFileSync(__dirname + '/rtc-video-room-key.pem'),
+    cert: fs.readFileSync(__dirname + '/rtc-video-room-cert.pem')
   },
-  server = https.createServer(options, app).listen(process.env.PORT || 3000),
+  port = process.env.PORT || 3000,
+  server = process.env.NODE_ENV === 'production' ?
+    http.createServer(app).listen(port) :
+    https.createServer(options, app).listen(port),
   io = sio(server);
 // compress all requests
 app.use(compression());
