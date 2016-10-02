@@ -2,7 +2,7 @@
 // https://medium.com/@tkssharma/eslint-in-react-babel-webpack-9cb1c4e86f4e#.hlophrwed
 var webpack = require("webpack");
 module.exports = {
-  devtool: 'eval',
+  devtool: /*'eval',*/'cheap-module-source-map',
   entry: './src/index.js',
   output: {
     path: './public',
@@ -14,6 +14,11 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         loaders: ['babel-loader', 'eslint-loader']
+      },
+      {
+        test: /\.css/,
+        loaders: ['style', 'css'],
+        include: __dirname + '/src'
       }
     ]
   },

@@ -12,11 +12,6 @@ button {
         font-size: 1em;
     }
 }
-body {
-	background: #333;
-	margin: 0;
-    color: #eee;
-}
 input:focus,
 button:focus {
     outline:0;

@@ -6,6 +6,7 @@ import { Router, Route, browserHistory } from 'react-router'
 import Home from './containers/HomePage'
 import Room from './containers/RoomPage'
 import NotFound from './components/NotFound'
+import styles from './app.css'
 
 render(<Provider store={store}>
 		<Router history={browserHistory}>
