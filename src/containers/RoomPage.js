@@ -3,6 +3,8 @@ import MediaContainer from './MediaContainer'
 import CommunicationContainer from './CommunicationContainer'
 import { connect } from 'react-redux'
 import store from '../store'
+import io from 'socket.io-client'
+
 class RoomPage extends React.Component {
   constructor(props) {
     super(props);
