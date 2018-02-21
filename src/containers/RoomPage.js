@@ -18,7 +18,6 @@ class RoomPage extends React.Component {
     this.props.addRoom();
   }
   render(){
-  	const href = window.location.href;
     return (
       <div>
         <MediaContainer media={media => this.media = media} socket={this.socket} getUserMedia={this.getUserMedia} />
