@@ -1,14 +1,22 @@
-import React from 'react'
+import React, { Component } from 'react';
+import { PropTypes } from 'prop-types';
 
-export default class MediaBridge extends React.Component {
-  static propTypes = {
-    socket: React.PropTypes.object.isRequired,
-    getUserMedia: React.PropTypes.object.isRequired,
-    media: React.PropTypes.func.isRequired
-  }
-  state = {
-    bridge: '',
-    user: ''
+class MediaBridge extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      bridge: '',
+      user: ''
+    }
+    this.onRemoteHangup = this.onRemoteHangup.bind(this);
+    this.onMessage = this.onMessage.bind(this);
+    this.sendData = this.sendData.bind(this);
+    this.setupDataHandlers = this.setupDataHandlers.bind(this);
+    this.setDescription = this.setDescription.bind(this);
+    this.sendDescription = this.sendDescription.bind(this);
+    this.hangup = this.hangup.bind(this);
+    this.init = this.init.bind(this);
+    this.setDescription = this.setDescription.bind(this);
   }
   componentWillMount() {
     // chrome polyfill for connection between the local device and a remote peer
@@ -17,10 +25,7 @@ export default class MediaBridge extends React.Component {
   }
   componentDidMount() {
     this.props.getUserMedia
-      .then(stream => {
-          this.localStream = stream;
-          this.localVideo.src = window.URL.createObjectURL(stream);
-        });
+      .then(stream => this.localVideo.srcObject = this.localStream = stream);
     this.props.socket.on('message', this.onMessage);
     this.props.socket.on('hangup', this.onRemoteHangup);
   }
@@ -31,8 +36,10 @@ export default class MediaBridge extends React.Component {
     }
     this.props.socket.emit('leave');
   }
-  onRemoteHangup = () => this.setState({user: 'host', bridge: 'host-hangup'})
-  onMessage = message => {
+  onRemoteHangup() {
+    this.setState({user: 'host', bridge: 'host-hangup'});
+  }
+  onMessage(message) {
       if (message.type === 'offer') {
           // set remote description and answer
           this.pc.setRemoteDescription(new RTCSessionDescription(message));
@@ -68,15 +75,21 @@ export default class MediaBridge extends React.Component {
         console.log('The Data Channel is Closed');
       };
   }
-  setDescription = offer => this.pc.setLocalDescription(offer)
+  setDescription(offer) {
+    this.pc.setLocalDescription(offer);
+  }
   // send the offer to a server to be forwarded to the other peer
-  sendDescription = () => this.props.socket.send(this.pc.localDescription)
+  sendDescription() {
+    this.props.socket.send(this.pc.localDescription);
+  }
   hangup() {
     this.setState({user: 'guest', bridge: 'guest-hangup'});
     this.pc.close();
     this.props.socket.emit('leave');
   }
-  handleError = e => console.log(e)
+  handleError(e) {
+    console.log(e);
+  }
   init() {
     // wait for local media to be ready
     const attachMediaIfReady = () => {
@@ -108,7 +121,7 @@ export default class MediaBridge extends React.Component {
     this.pc.onaddstream = e => {
         console.log('onaddstream', e) 
         this.remoteStream = e.stream;
-        this.remoteVideo.src = window.URL.createObjectURL(this.remoteStream);
+        this.remoteVideo.srcObject = this.remoteStream = e.stream;
         this.setState({bridge: 'established'});
     };
     this.pc.ondatachannel = e => {
@@ -123,7 +136,7 @@ export default class MediaBridge extends React.Component {
         //sendData('hello');
     };
     // attach local media to the peer connection
-    this.pc.addStream(this.localStream);
+    this.localStream.getTracks().forEach(track => this.pc.addTrack(track, this.localStream));
     // call if we were the last to connect (to increase
     // chances that everything is set up properly at both ends)
     if (this.state.user === 'host') {
@@ -139,3 +152,9 @@ export default class MediaBridge extends React.Component {
     );
   }
 }
+MediaBridge.propTypes = {
+  socket: PropTypes.object.isRequired,
+  getUserMedia: PropTypes.object.isRequired,
+  media: PropTypes.func.isRequired
+}
+export default MediaBridge;

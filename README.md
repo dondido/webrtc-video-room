@@ -11,9 +11,7 @@ To connect two users over WebRTC, we exchange information to allow browsers to t
 Once you have forked this project, go ahead and use npm through the command line to install all required dependecies:
 
 ```bash
-npm install
-npm install webpack -global
-webpack --progress -p
+npm i
 npm start
 ```
 

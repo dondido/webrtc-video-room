@@ -1,6 +1,7 @@
-import React from 'react'
-import { Link } from 'react-router'
-import ToggleFullScreen from './ToggleFullScreen'
+import React from 'react';
+import { PropTypes } from 'prop-types';
+import { Link } from 'react-router-dom';
+import ToggleFullScreen from './ToggleFullScreen';
 
 const Communication = props =>
   <div className="auth">
@@ -34,13 +35,13 @@ const Communication = props =>
         </svg>
       </button>
     </div>
-    <form className="request-access">
+    <div className="request-access">
       <p><span className="you-left">You hung up.&nbsp;</span>Send an invitation to join the room.</p>
       <form onSubmit={props.send}>
         <input type="text" autoFocus onChange={props.handleInput} data-ref="message"  maxLength="30" required placeholder="Hi, I'm John Doe." />
-        <button type="submit" className="primary-button">Send</button>
+        <button className="primary-button">Send</button>
       </form>
-    </form>
+    </div>
     <div className="grant-access">
       <p>A peer has sent you a message to join the room:</p>
       <div dangerouslySetInnerHTML={props.getContent(props.message)}></div>
@@ -58,16 +59,16 @@ const Communication = props =>
   </div>
 
 Communication.propTypes = {
-  message: React.PropTypes.string.isRequired,
-  audio: React.PropTypes.bool.isRequired,
-  video: React.PropTypes.bool.isRequired,
-  toggleVideo: React.PropTypes.func.isRequired,
-  toggleAudio: React.PropTypes.func.isRequired,
-  getContent: React.PropTypes.func.isRequired,
-  send: React.PropTypes.func.isRequired,
-  handleHangup: React.PropTypes.func.isRequired,
-  handleInput: React.PropTypes.func.isRequired,
-  handleInvitation: React.PropTypes.func.isRequired
+  message: PropTypes.string.isRequired,
+  audio: PropTypes.bool.isRequired,
+  video: PropTypes.bool.isRequired,
+  toggleVideo: PropTypes.func.isRequired,
+  toggleAudio: PropTypes.func.isRequired,
+  getContent: PropTypes.func.isRequired,
+  send: PropTypes.func.isRequired,
+  handleHangup: PropTypes.func.isRequired,
+  handleInput: PropTypes.func.isRequired,
+  handleInvitation: PropTypes.func.isRequired
 };
 
 export default Communication;

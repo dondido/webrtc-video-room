@@ -1,4 +1,5 @@
 import React from 'react'
+import { PropTypes } from 'prop-types';
 import Remarkable from 'remarkable'
 import MediaContainer from './MediaContainer'
 import Communication from '../components/Communication'
@@ -7,42 +8,39 @@ import { connect } from 'react-redux'
 class CommunicationContainer extends React.Component {
   constructor(props) {
     super(props);
-  }
-  static propTypes = {
-    socket: React.PropTypes.object.isRequired,
-    getUserMedia: React.PropTypes.object.isRequired,
-    audio: React.PropTypes.bool.isRequired,
-    video: React.PropTypes.bool.isRequired,
-    setVideo: React.PropTypes.func.isRequired,
-    setAudio: React.PropTypes.func.isRequired,
-    media: React.PropTypes.instanceOf(MediaContainer)
-  }
-  state = {
-    sid: '',
-    message: '',
-    audio: true,
-    video: true
+    this.state = {
+      sid: '',
+      message: '',
+      audio: true,
+      video: true
+    };
+    this.handleInvitation = this.handleInvitation.bind(this);
+    this.handleHangup = this.handleHangup.bind(this);
+    this.handleInput = this.handleInput.bind(this);
+    this.toggleVideo = this.toggleVideo.bind(this);
+    this.toggleAudio = this.toggleAudio.bind(this);
+    this.send = this.send.bind(this);
   }
   hideAuth() {
     this.props.media.setState({bridge: 'connecting'});
   } 
-  full = () => this.props.media.setState({bridge: 'full'})
-  componentWillMount() {
-    this.setState({video: this.props.video});
-    this.setState({audio: this.props.audio});
+  full() {
+    this.props.media.setState({bridge: 'full'});
   }
   componentDidMount() {
     const socket = this.props.socket;
+    console.log('props', this.props)
+    this.setState({video: this.props.video, audio: this.props.audio});
+
     socket.on('create', () =>
       this.props.media.setState({user: 'host', bridge: 'create'}));
     socket.on('full', this.full);
     socket.on('bridge', role => this.props.media.init());
     socket.on('join', () =>
       this.props.media.setState({user: 'guest', bridge: 'join'}));
-    socket.on('approve', data => {
+    socket.on('approve', ({ message, sid }) => {
       this.props.media.setState({bridge: 'approve'});
-      this.setState({message: data.message});
-      this.setState({sid: data.sid});
+      this.setState({ message, sid });
     });
     socket.emit('find');
     this.props.getUserMedia
@@ -52,13 +50,15 @@ class CommunicationContainer extends React.Component {
           this.localStream.getAudioTracks()[0].enabled = this.state.audio;
         });
   }
-  handleInput = e => this.setState({[e.target.dataset.ref]: e.target.value})
-  send = e => {
+  handleInput(e) {
+    this.setState({[e.target.dataset.ref]: e.target.value});
+  }
+  send(e) {
     e.preventDefault();
     this.props.socket.emit('auth', this.state);
     this.hideAuth();
   }
-  handleInvitation = e => {
+  handleInvitation(e) {
     e.preventDefault();
     this.props.socket.emit([e.target.dataset.ref], this.state.sid);
     this.hideAuth();
@@ -66,17 +66,19 @@ class CommunicationContainer extends React.Component {
   getContent(content) {
     return {__html: (new Remarkable()).render(content)};
   }
-  toggleVideo = () => {
+  toggleVideo() {
     const video = this.localStream.getVideoTracks()[0].enabled = !this.state.video;
     this.setState({video: video});
     this.props.setVideo(video);
   }
-  toggleAudio = () => {
+  toggleAudio() {
     const audio = this.localStream.getAudioTracks()[0].enabled = !this.state.audio;
     this.setState({audio: audio});
     this.props.setAudio(audio);
   }
-  handleHangup = () => this.props.media.hangup()
+  handleHangup() {
+    this.props.media.hangup();
+  }
   render(){
     return (
       <Communication
@@ -93,9 +95,19 @@ class CommunicationContainer extends React.Component {
 }
 const mapStateToProps = store => ({video: store.video, audio: store.audio});
 const mapDispatchToProps = dispatch => (
-    {
-      setVideo: boo => store.dispatch({type: 'SET_VIDEO', video: boo}),
-      setAudio: boo => store.dispatch({type: 'SET_AUDIO', audio: boo})
-    }
-  );
+  {
+    setVideo: boo => store.dispatch({type: 'SET_VIDEO', video: boo}),
+    setAudio: boo => store.dispatch({type: 'SET_AUDIO', audio: boo})
+  }
+);
+
+CommunicationContainer.propTypes = {
+  socket: PropTypes.object.isRequired,
+  getUserMedia: PropTypes.object.isRequired,
+  audio: PropTypes.bool.isRequired,
+  video: PropTypes.bool.isRequired,
+  setVideo: PropTypes.func.isRequired,
+  setAudio: PropTypes.func.isRequired,
+  media: PropTypes.instanceOf(MediaContainer)
+};
 export default connect(mapStateToProps, mapDispatchToProps)(CommunicationContainer);
