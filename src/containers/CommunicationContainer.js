@@ -1,6 +1,5 @@
 import React from 'react'
 import { PropTypes } from 'prop-types';
-import Remarkable from 'remarkable'
 import MediaContainer from './MediaContainer'
 import Communication from '../components/Communication'
 import store from '../store'
@@ -63,9 +62,6 @@ class CommunicationContainer extends React.Component {
     this.props.socket.emit([e.target.dataset.ref], this.state.sid);
     this.hideAuth();
   }
-  getContent(content) {
-    return {__html: (new Remarkable()).render(content)};
-  }
   toggleVideo() {
     const video = this.localStream.getVideoTracks()[0].enabled = !this.state.video;
     this.setState({video: video});
@@ -85,7 +81,6 @@ class CommunicationContainer extends React.Component {
         {...this.state}
         toggleVideo={this.toggleVideo}
         toggleAudio={this.toggleAudio}
-        getContent={this.getContent}
         send={this.send}
         handleHangup={this.handleHangup}
         handleInput={this.handleInput}

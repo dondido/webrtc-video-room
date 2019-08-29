@@ -26,13 +26,6 @@ app.use(favicon('./dist/favicon.ico'));
 app.disable('x-powered-by');
 io.sockets.on('connection', socket => {
   let room = '';
-  const create = err => {
-    if (err) {
-      return console.log(err);
-    }
-    socket.join(room);
-    socket.emit('create');
-  };
   // sending to all clients in the room (channel) except sender
   socket.on('message', message => socket.broadcast.to(room).emit('message', message));
   socket.on('find', () => {
