@@ -15,6 +15,12 @@ npm i
 npm start
 ```
 
+The app can be accessed at:
+
+```bash
+https://localhost:3000
+```
+
 ## Demo
 
 Demo of the app can be found on Heroku:
