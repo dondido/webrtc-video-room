@@ -1,4 +1,4 @@
-# WebRTC video chat app with ReactJS
+# WebRTC video chat app with ReactJS - An Amazing Project
 ## Synopsis
 WebRTC audio/video conferencing app with user authentication using ReactJS.
 ## Motivation
