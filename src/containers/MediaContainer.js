@@ -18,12 +18,8 @@ class MediaBridge extends Component {
     this.init = this.init.bind(this);
     this.setDescription = this.setDescription.bind(this);
   }
-  componentWillMount() {
-    // chrome polyfill for connection between the local device and a remote peer
-    window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
-    this.props.media(this);
-  }
   componentDidMount() {
+    this.props.media(this);
     this.props.getUserMedia
       .then(stream => this.localVideo.srcObject = this.localStream = stream);
     this.props.socket.on('message', this.onMessage);

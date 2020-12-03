@@ -28,7 +28,6 @@ class CommunicationContainer extends React.Component {
   }
   componentDidMount() {
     const socket = this.props.socket;
-    console.log('props', this.props)
     this.setState({video: this.props.video, audio: this.props.audio});
 
     socket.on('create', () =>
