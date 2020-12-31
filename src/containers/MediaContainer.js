@@ -37,24 +37,19 @@ class MediaBridge extends Component {
   }
   onMessage(message) {
       if (message.type === 'offer') {
-          // set remote description and answer
-          this.pc.setRemoteDescription(new RTCSessionDescription(message));
-          this.pc.createAnswer()
-            .then(this.setDescription)
-            .then(this.sendDescription)
-            .catch(this.handleError); // An error occurred, so handle the failure to connect
+            // set remote description and answer
+            this.pc.setRemoteDescription(new RTCSessionDescription(message))
+                .then(() => this.pc.createAnswer())
+                .then(this.setDescription)
+                .then(this.sendDescription)
+                .catch(this.handleError); // An error occurred, so handle the failure to connect
 
       } else if (message.type === 'answer') {
           // set remote description
           this.pc.setRemoteDescription(new RTCSessionDescription(message));
       } else if (message.type === 'candidate') {
-          // add ice candidate
-          this.pc.addIceCandidate(
-              new RTCIceCandidate({
-                  sdpMLineIndex: message.mlineindex,
-                  candidate: message.candidate
-              })
-          );
+            // add ice candidate
+            this.pc.addIceCandidate(message.candidate);
       }
   }
   sendData(msg) {
@@ -72,7 +67,7 @@ class MediaBridge extends Component {
       };
   }
   setDescription(offer) {
-    this.pc.setLocalDescription(offer);
+    return this.pc.setLocalDescription(offer);
   }
   // send the offer to a server to be forwarded to the other peer
   sendDescription() {
@@ -101,15 +96,14 @@ class MediaBridge extends Component {
     // this is one of Google's public STUN servers
     // make sure your offer/answer role does not change. If user A does a SLD
     // with type=offer initially, it must do that during  the whole session
-    this.pc = new RTCPeerConnection({iceServers: [{url: 'stun:stun.l.google.com:19302'}]});
+    this.pc = new RTCPeerConnection({iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]});
     // when our browser gets a candidate, send it to the peer
     this.pc.onicecandidate = e => {
         console.log(e, 'onicecandidate');
         if (e.candidate) {
             this.props.socket.send({
                 type: 'candidate',
-                mlineindex: e.candidate.sdpMLineIndex,
-                candidate: e.candidate.candidate
+                candidate: e.candidate,
             });
         }
     };
