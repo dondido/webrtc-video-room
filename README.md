@@ -7,14 +7,25 @@ Simple ReactJS app that interacts with the WebRTC APIs to establish audio/video 
 To connect two users over WebRTC, we exchange information to allow browsers to talk to each other. This process is called signaling and it is facilitated by using NodeJS and socket server chained to the express 4.0 engine to provide the plumbing. Other than signaling, no data has to be sent through a server. When a connection is successfully established and authentication and authorization are complete, stream data exchanged between peers is directed to a React component for rendering.
 
 ## Installation
+Once you have cloned this project, go ahead and
 
-Once you have forked this project, go ahead and use npm through the command line to install all required dependecies:
+### NPM
+Use npm through the command line to install all required dependecies:
 
 ```bash
 npm i
 npm start
 ```
 
+### Docker
+Or use it with Docker:
+
+```bash
+docker build -t webvideo .
+docker run -d -p 3000:3000 webvideo
+```
+
+### Access
 The app can be accessed at:
 
 ```bash
