@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "compression": "^1.7.2",
-    "express": "^4.16.3",
+    "express": "^4.17.3",
     "react": "^16.4.0",
     "react-dom": ">=16.7.0",
     "react-redux": "^5.0.7",
