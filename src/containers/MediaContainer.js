@@ -43,7 +43,6 @@ class MediaBridge extends Component {
                 .then(this.setDescription)
                 .then(this.sendDescription)
                 .catch(this.handleError); // An error occurred, so handle the failure to connect
-
       } else if (message.type === 'answer') {
           // set remote description
           this.pc.setRemoteDescription(new RTCSessionDescription(message));
@@ -91,7 +90,7 @@ class MediaBridge extends Component {
         .then(this.setDescription)
         .then(this.sendDescription)
         .catch(this.handleError); // An error occurred, so handle the failure to connect
-    }
+    };
     // set up the peer connection
     // this is one of Google's public STUN servers
     // make sure your offer/answer role does not change. If user A does a SLD
@@ -129,6 +128,7 @@ class MediaBridge extends Component {
     this.localStream.getTracks().forEach(track => this.pc.addTrack(track, this.localStream));
     // call if we were the last to connect (to increase
     // chances that everything is set up properly at both ends)
+    console.log(11111111, this.state.user)
     if (this.state.user === 'host') {
       this.props.getUserMedia.then(attachMediaIfReady);
     }  

@@ -17,6 +17,7 @@ const app = express(),
     http.createServer(app).listen(port) :
     https.createServer(options, app).listen(port),
   io = sio(server);
+const { rooms } = io.of('/').adapter;
 // compress all requests
 app.use(compression());
 app.use(express.static(path.join(__dirname, 'dist')));
@@ -24,19 +25,19 @@ app.use((req, res) => res.sendFile(__dirname + '/dist/index.html'));
 app.use(favicon('./dist/favicon.ico'));
 // Switch off the default 'X-Powered-By: Express' header
 app.disable('x-powered-by');
-io.sockets.on('connection', socket => {
+io.on('connection', socket => {
   let room = '';
   // sending to all clients in the room (channel) except sender
   socket.on('message', message => socket.broadcast.to(room).emit('message', message));
   socket.on('find', () => {
     const url = socket.request.headers.referer.split('/');
     room = url[url.length - 1];
-    const sr = io.sockets.adapter.rooms[room];
+    const sr = rooms.get(room);
     if (sr === undefined) {
       // no room with such name is found so create it
       socket.join(room);
       socket.emit('create');
-    } else if (sr.length === 1) {
+    } else if (sr.size === 1) {
       socket.emit('join');
     } else { // max two clients
       socket.emit('full', room);
@@ -47,8 +48,9 @@ io.sockets.on('connection', socket => {
     // sending to all clients in the room (channel) except sender
     socket.broadcast.to(room).emit('approve', data);
   });
-  socket.on('accept', id => {
-    io.sockets.connected[id].join(room);
+  socket.on('accept', async (id) => {
+    const [ socket ] = await io.in(id).fetchSockets();
+    socket.join(room);
     // sending to all clients in 'game' room(channel), include sender
     io.in(room).emit('bridge');
   });
@@ -58,4 +60,3 @@ io.sockets.on('connection', socket => {
     socket.broadcast.to(room).emit('hangup');
     socket.leave(room);});
 });
-

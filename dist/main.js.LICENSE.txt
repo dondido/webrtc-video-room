@@ -4,8 +4,6 @@ object-assign
 @license MIT
 */
 
-/*! https://mths.be/utf8js v2.1.2 by @mathias */
-
 /** @license React v0.15.0
  * scheduler.production.min.js
  *

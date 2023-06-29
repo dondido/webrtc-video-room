@@ -11,7 +11,7 @@ class RoomPage extends Component {
     this.getUserMedia = navigator.mediaDevices.getUserMedia({
       audio: true,
       video: true
-    }).catch(e => alert('getUserMedia() error: ' + e.name))
+    }).catch(e => alert('getUserMedia() error: ' + e.name));
     this.socket = io.connect();
   }
   componentDidMount() {

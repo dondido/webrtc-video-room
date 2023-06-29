@@ -33,7 +33,7 @@ class CommunicationContainer extends React.Component {
     socket.on('create', () =>
       this.props.media.setState({user: 'host', bridge: 'create'}));
     socket.on('full', this.full);
-    socket.on('bridge', role => this.props.media.init());
+    socket.on('bridge', () => this.props.media.init());
     socket.on('join', () =>
       this.props.media.setState({user: 'guest', bridge: 'join'}));
     socket.on('approve', ({ message, sid }) => {
@@ -58,7 +58,7 @@ class CommunicationContainer extends React.Component {
   }
   handleInvitation(e) {
     e.preventDefault();
-    this.props.socket.emit([e.target.dataset.ref], this.state.sid);
+    this.props.socket.emit(e.target.dataset.ref, this.state.sid);
     this.hideAuth();
   }
   toggleVideo() {
@@ -90,8 +90,8 @@ class CommunicationContainer extends React.Component {
 const mapStateToProps = store => ({video: store.video, audio: store.audio});
 const mapDispatchToProps = dispatch => (
   {
-    setVideo: boo => store.dispatch({type: 'SET_VIDEO', video: boo}),
-    setAudio: boo => store.dispatch({type: 'SET_AUDIO', audio: boo})
+    setVideo: boo => dispatch({type: 'SET_VIDEO', video: boo}),
+    setAudio: boo => dispatch({type: 'SET_AUDIO', audio: boo}),
   }
 );
 
