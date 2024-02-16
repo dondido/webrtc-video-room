@@ -128,7 +128,6 @@ class MediaBridge extends Component {
     this.localStream.getTracks().forEach(track => this.pc.addTrack(track, this.localStream));
     // call if we were the last to connect (to increase
     // chances that everything is set up properly at both ends)
-    console.log(11111111, this.state.user)
     if (this.state.user === 'host') {
       this.props.getUserMedia.then(attachMediaIfReady);
     }  
